@@ -46,6 +46,7 @@ left_at | 退出時刻 | date
 
 
 @startuml
+scale 1.5
 
 title class
 

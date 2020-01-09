@@ -1,6 +1,6 @@
 # EMBEDDED SERVER CONFIGURATION (ServerProperties)
 server:
-  port: 9000
+  port: 8080
 
 spring:
 # THYMELEAF (ThymeleafAutoConfiguration)
@@ -10,21 +10,21 @@ spring:
 # INTERNATIONALIZATION (MessageSourceAutoConfiguration)
   messages:
     basename: messages
-    #cache-seconds: -1
+#    cache-seconds: -1
     encoding: UTF-8
 # MONGODB (MongoProperties)
   data:
     mongodb:
-      host: xxx # hostname
+      host: cluster0-cf1b0.gcp.mongodb.net
       port: 27017
-      uri: xxx # connection URL
+      uri: mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority
       database: mongovwdb
 #      authentication-database: mongovwdb
 #      grid-fs-database:
-      username: xxx
-      password: xxx
-      #repositories:
-        #enabled: true  # if spring data repository support is enabled
+      username: app
+      password: kAz54fgSlnACwxIi
+#      repositories:
+#        enabled: true  # if spring data repository support is enabled
 
 # ENDPOINTS (AbstractEndpoint subclasses)
 #endpoints:
