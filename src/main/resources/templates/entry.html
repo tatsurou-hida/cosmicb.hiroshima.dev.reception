@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>訪 問 者 受 付 画 面</title>
+</head>
+<body>
+	<h1>ようこそコスミックビジネスへ</h1>
+
+	<form action="registration" method="post">
+
+		所属／会社：
+		<input type="text" name="inputCompany" autofocus/><br>
+		お名前　　：
+		<input type="text" name="inputName"/><br>
+		人数　　　：
+		<input type="number" name="inputNum" max="10" min="1" value="1"/><br>
+		<input type="submit" value ="受付"/>
+		<br>
+
+		<div th:if="${entry} != null">
+			<br><br>
+			<span>入力情報</span>
+			<div>
+				<label for="company1">会社名：</label>
+				<span th:text="${entry.inputCompany}"></span><br>
+				<label for="name1">お名前：</label>
+				<span th:text="${entry.inputName}"></span><br>
+				<label for="num1">人　数：</label>
+				<span th:text="${entry.inputNum}"></span><br>
+			</div>
+
+		</div>
+
+
+
+	</form>
+
+</body>
+</html>
