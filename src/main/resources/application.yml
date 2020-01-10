@@ -18,7 +18,7 @@ spring:
       host: cluster0-cf1b0.gcp.mongodb.net
       port: 27017
       uri: mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority
-      database: mongovwdb
+      database: test
 #      authentication-database: mongovwdb
 #      grid-fs-database:
       username: app

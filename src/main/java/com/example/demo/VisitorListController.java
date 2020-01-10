@@ -1,39 +1,49 @@
 package com.example.demo;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@EnableAutoConfiguration
+@ComponentScan
 public class VisitorListController {
 
-	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	@Autowired
+	private VisitorListService visitorListService;
+	//@Autowired
+	//private VisitorListRepository visitorListRepository;
+
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public ModelAndView index(ModelAndView mv) {
+
+		System.out.println("★★★★★ Controller called.");
+
+
+		//カレンダーをセットする
+		mv.addObject("minDate",visitorListService.getMinDate());
+
+		mv.addObject("visitList", visitorList);
 		mv.setViewName("VisitorList");
 		return mv;
 	}
 
-	//TODO:上に統合したい
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String test(Model model){
+//	@RequestMapping(value = "/list")
+//	@ResponseBody
+	public String helloControl() {
 
-		List<String> visitList = new ArrayList<String>();
-
-		visitList.add("100, コスミックビジネス, 岡, 3");
-		visitList.add("101, コスミックビジネス, 白幡, 4");
-		visitList.add("102, コスミックビジネス, 畑上, 5");
-
-		model.addAttribute("visitList" , visitList);
+		System.out.println("★★★★★ 'helloControl' called.");
+		return visitorListService.getMessage();
 
 
-		return "VisitorList";
 
 	}
+
+
 
 
 }
