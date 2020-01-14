@@ -9,12 +9,12 @@
 	<fieldset>
 		<legend>日付フィルター</legend>
 
-		<form action="/filter" name="frm_filter" method="post">
+		<form action="/search" name="frm_search" method="post">
 			<p>
 				入室日：
-				<input type="date" name="inputMinDate" min="2020-01-01" value="${minDate}"/>
+				<input type="date" name="inputMinDate" min="2020-01-01" th:value="${minDate}"/>
 				～
-				<input type="date" name="inputMaxDate" min="2020-01-01" value="${maxDate}"/>
+				<input type="date" name="inputMaxDate" min="2020-01-01" th:value="${maxDate}"/>
 			</p>
 			<p>
 				未退室のみ<input type="checkbox" name="checkbox"/>

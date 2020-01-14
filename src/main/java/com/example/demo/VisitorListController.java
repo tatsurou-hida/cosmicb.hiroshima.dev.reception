@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class VisitorListController {
 
 	@Autowired
+	//インスタンス化
 	private VisitorListService visitorListService;
 	//@Autowired
 	//private VisitorListRepository visitorListRepository;
@@ -24,10 +25,14 @@ public class VisitorListController {
 		System.out.println("★★★★★ Controller called.");
 
 
-		//カレンダーをセットする
-		mv.addObject("minDate",visitorListService.getMinDate());
+		//カレンダーに値をセットする
+		mv.addObject("minDate", visitorListService.getMinDate());
+		mv.addObject("maxDate", visitorListService.getMaxDate());
 
-		mv.addObject("visitList", visitorList);
+		System.out.println(visitorListService.getMaxDate());
+		System.out.println(visitorListService.getMinDate());
+
+		//Thymeleafを表示する
 		mv.setViewName("VisitorList");
 		return mv;
 	}

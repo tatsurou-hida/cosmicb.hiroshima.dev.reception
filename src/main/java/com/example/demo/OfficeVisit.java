@@ -5,17 +5,25 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.springframework.data.annotation.Id;
-
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+@Document(collection = "visitor_list")
 public class OfficeVisit {
 
 	@Id
 	private String _id;
 
+	@Field("visitor_name")
 	private String visitor_name;	//訪問者
+	@Field("visitor_org")
 	private String visitor_org;		//所属・会社名
+	@Field("visitor_count")
 	private int visitor_count;		//人数
+	@Field("visited_at")
 	private Date visited_at;		//来訪日時
+	@Field("person_to_visit")
 	private String person_to_visit;	//訪問先
+	@Field("left_at")
 	private Date left_at;			//退室日時
 
 	public OfficeVisit(String visitor_name, String visitor_org, int visitor_count, String person_to_visit) {
