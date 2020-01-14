@@ -1,11 +1,18 @@
 package com.example.demo;
 
+import static org.springframework.data.mongodb.core.query.Criteria.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.client.MongoClients;
 
 @Service
 public class VisitorListService {
@@ -27,11 +34,23 @@ public class VisitorListService {
 
 	}
 
+	public static void main(String[] args)  {
 
+		System.out.println("★★★★★ ServiceMain called.");
 
-	private void search() {
+		String uri = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
+
+	    MongoOperations mongoOps = new MongoTemplate(MongoClients.create(uri), "test");
+	    mongoOps.insert(new Person("Joe", 34));
+
+	    System.out.println(mongoOps.findOne(new Query(where("name").is("Joe")), Person.class));
+
+	    //mongoOps.dropCollection("person");
+
+	  }
+
+	public void search() {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
-		
 
 
 

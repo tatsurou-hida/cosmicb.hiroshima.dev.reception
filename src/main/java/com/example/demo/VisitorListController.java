@@ -29,8 +29,11 @@ public class VisitorListController {
 		mv.addObject("minDate", visitorListService.getMinDate());
 		mv.addObject("maxDate", visitorListService.getMaxDate());
 
-		System.out.println(visitorListService.getMaxDate());
 		System.out.println(visitorListService.getMinDate());
+		System.out.println(visitorListService.getMaxDate());
+
+		VisitorListService.main(null);
+
 
 		//Thymeleafを表示する
 		mv.setViewName("VisitorList");

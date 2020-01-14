@@ -12,9 +12,9 @@
 		<form action="/search" name="frm_search" method="post">
 			<p>
 				入室日：
-				<input type="date" name="inputMinDate" min="2020-01-01" th:value="${minDate}"/>
+				<input type="date" name="inputMinDate" min="2020-01-01" th:max="${maxDate}" th:value="${minDate}"/>
 				～
-				<input type="date" name="inputMaxDate" min="2020-01-01" th:value="${maxDate}"/>
+				<input type="date" name="inputMaxDate" min="2020-01-01" th:max="${maxDate}" th:value="${maxDate}"/>
 			</p>
 			<p>
 				未退室のみ<input type="checkbox" name="checkbox"/>
