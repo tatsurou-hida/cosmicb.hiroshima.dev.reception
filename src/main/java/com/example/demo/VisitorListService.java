@@ -31,6 +31,7 @@ public class VisitorListService {
 
 	private void search() {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
+		
 
 
 
