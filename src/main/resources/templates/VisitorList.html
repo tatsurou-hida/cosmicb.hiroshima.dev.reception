@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>管 理 画 面</title>
@@ -9,15 +9,16 @@
 	<fieldset>
 		<legend>日付フィルター</legend>
 
-		<form action="/search" name="frm_search" method="post">
+		<form action="#" th:action="@{/search}" method="post" th:object="${searchM}">
 			<p>
 				入室日：
-				<input type="date" name="inputMinDate" min="2020-01-01" th:max="${maxDate}" th:value="${minDate}"/>
+				<input type="date" min="2020-01-01" th:field="*{minDate}"/>
 				～
-				<input type="date" name="inputMaxDate" min="2020-01-01" th:max="${maxDate}" th:value="${maxDate}"/>
+				<input type="date" min="2020-01-01" th:field="*{maxDate}"/>
 			</p>
 			<p>
-				未退室のみ<input type="checkbox" name="checkbox"/>
+				未退室のみ
+				<input type="checkbox" th:field="*{checked}"/>
 			</p>
 			<input type="submit" value="検索"/>
 		</form>

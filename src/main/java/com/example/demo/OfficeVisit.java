@@ -2,7 +2,6 @@ package com.example.demo;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,13 +25,20 @@ public class OfficeVisit {
 	@Field("left_at")
 	private Date left_at;			//退室日時
 
-	public OfficeVisit(String visitor_name, String visitor_org, int visitor_count, String person_to_visit) {
+	public OfficeVisit(
+			String visitor_name,
+			String visitor_org,
+			int visitor_count,
+			String person_to_visit,
+			java.util.Date visited_at,
+			java.util.Date left_at) {
 
 		this.visitor_name = visitor_name;
 		this.visitor_org = visitor_org;
 		this.visitor_count = visitor_count;
 		this.person_to_visit = person_to_visit;
-		this.visited_at = (Date) Calendar.getInstance().getTime();
+		this.visited_at = (Date) visited_at;
+		this.left_at = (Date) left_at;
 
 
 	}
@@ -66,5 +72,14 @@ public class OfficeVisit {
 		return sdf.format(visited_at);
 	}
 
+	@Override
+    public String toString(){
+        return "visitor_name: " + visitor_name
+        		+ " visitor_org: " + visitor_org
+        		+ " visitor_count: " + visitor_count
+        		+ " visited_at: " + visited_at.toString()
+        		+ " person_to_visit: " + person_to_visit
+        		+ " left_at: " + left_at.toString();
+	}
 
 }
