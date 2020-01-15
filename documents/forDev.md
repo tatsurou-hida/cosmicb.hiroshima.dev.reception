@@ -43,7 +43,7 @@ visitor_count | 来訪者人数 | integer
 visited_at | 来訪時刻 | date
 person_to_visit | 来訪先 | string
 left_at | 退出時刻 | date
-
+_class | クラス名  | String
 
 @startuml
 scale 1.5
