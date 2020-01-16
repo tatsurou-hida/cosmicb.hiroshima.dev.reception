@@ -1,12 +1,12 @@
 package com.example.demo;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
 @Document(collection = "visitor_list")
 public class OfficeVisit {
 
@@ -20,19 +20,27 @@ public class OfficeVisit {
 	@Field("visitor_count")
 	private int visitor_count;		//人数
 	@Field("visited_at")
-	private Date visited_at;		//来訪日時
+	private LocalDateTime visited_at;		//来訪日時
 	@Field("person_to_visit")
 	private String person_to_visit;	//訪問先
 	@Field("left_at")
-	private Date left_at;			//退室日時
+	private LocalDateTime left_at;			//退室日時
 
-	public OfficeVisit(String visitor_name, String visitor_org, int visitor_count, String person_to_visit) {
+	public OfficeVisit(
+
+			String visitor_name,
+			String visitor_org,
+			int visitor_count,
+			String person_to_visit,
+			LocalDateTime visited_at,
+			LocalDateTime left_at) {
 
 		this.visitor_name = visitor_name;
 		this.visitor_org = visitor_org;
 		this.visitor_count = visitor_count;
 		this.person_to_visit = person_to_visit;
-		this.visited_at = (Date) Calendar.getInstance().getTime();
+		this.visited_at = visited_at;
+		this.left_at = left_at;
 
 
 	}
@@ -49,7 +57,7 @@ public class OfficeVisit {
 		return visitor_count;
 	}
 
-	public Date getVisited_at() {
+	public LocalDateTime getVisited_at() {
 		return visited_at;
 	}
 
@@ -57,7 +65,7 @@ public class OfficeVisit {
 		return person_to_visit;
 	}
 
-	public Date getLeft_at() {
+	public LocalDateTime getLeft_at() {
 		return left_at;
 	}
 
@@ -66,5 +74,14 @@ public class OfficeVisit {
 		return sdf.format(visited_at);
 	}
 
+	@Override
+    public String toString(){
+        return "visitor_name: " + visitor_name
+        		+ " visitor_org: " + visitor_org
+        		+ " visitor_count: " + visitor_count
+        		+ " visited_at: " + visited_at.toString()
+        		+ " person_to_visit: " + person_to_visit
+        		+ " left_at: " + left_at.toString();
+	}
 
 }

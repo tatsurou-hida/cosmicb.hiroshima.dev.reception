@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @EnableAutoConfiguration
@@ -14,42 +15,60 @@ import org.springframework.web.servlet.ModelAndView;
 public class VisitorListController {
 
 	@Autowired
-	//インスタンス化
 	private VisitorListService visitorListService;
-	//@Autowired
-	//private VisitorListRepository visitorListRepository;
+	private SearchModel searchM = new SearchModel();
+
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ModelAndView index(ModelAndView mv) {
+	public String index(Model model) {
 
 		System.out.println("★★★★★ Controller called.");
 
+//		System.out.println(visitorListService.getMinDate());
+//		System.out.println(visitorListService.getMaxDate());
+		visitorListService.startPageInitialize(searchM);
 
-		//カレンダーに値をセットする
-		mv.addObject("minDate", visitorListService.getMinDate());
-		mv.addObject("maxDate", visitorListService.getMaxDate());
+		model.addAttribute("searchM", searchM);
 
-		System.out.println(visitorListService.getMinDate());
-		System.out.println(visitorListService.getMaxDate());
-
-		VisitorListService.main(null);
+		//Thymeleafを表示する;
+		return "VisitorList";
+	}
 
 
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	public String search(@ModelAttribute SearchModel searchM, Model model) {
+
+
+		//検索
+		visitorListService.search(searchM);
+
+
+		//form内の部品に値を入れる(入力内容の保持)
+		model.addAttribute("searchM", searchM);
 		//Thymeleafを表示する
-		mv.setViewName("VisitorList");
-		return mv;
-	}
-
-//	@RequestMapping(value = "/list")
-//	@ResponseBody
-	public String helloControl() {
-
-		System.out.println("★★★★★ 'helloControl' called.");
-		return visitorListService.getMessage();
-
-
+		return "VisitorList";
 
 	}
+
+//	@RequestMapping(value = "/search", method = RequestMethod.POST)
+//	public ModelAndView search(
+//			@RequestParam("inputMinDate")String inputMinDate,
+//			@RequestParam("inputMaxDate")String inputMaxDate,
+//			@RequestParam("checked")Boolean checked,
+//			ModelAndView mv) {
+//
+//
+//		return mv;
+//
+//	}
+
+//	//valueにはhtmlで定義したアクション名
+//    @RequestMapping(value="/registration", method=RequestMethod.POST)
+//    public String post(@ModelAttribute EntryModel form, Model model) {
+//    	model.addAttribute("entry", form);
+//        return "entry";
+//    }
+
 
 
 
