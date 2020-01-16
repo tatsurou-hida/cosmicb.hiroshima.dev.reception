@@ -1,68 +1,87 @@
 package com.example.demo;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import static org.springframework.data.mongodb.core.query.Criteria.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.client.MongoClients;
 
 @Service
 public class VisitorListService {
+
 	@Autowired
 	private VisitorListRepository visitorListRepository;
 
-	private String minDate, maxDate;
-	final String mongoUri = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
+	final String MONGO_URI = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
 
-	SearchModel searchM;
+	public void startPageInitialize(SearchModel searchM) {
 
-	//TODO:サービスで日付計算させる
-	private VisitorListService() {
+		LocalDate maxDate = LocalDate.now();
+		LocalDate minDate = maxDate.minusDays(7);
 
-		searchM = new SearchModel();
-
-		//Date型のフォーマット設定
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -7);		//1週間前の日付
-
-		minDate = sdf.format(cal.getTime());
-		maxDate = sdf.format(new Date());
-
-		searchM.setMinDate(minDate);
-		searchM.setMaxDate(maxDate);
+		searchM.setInputMinDate(minDate.toString());
+		searchM.setInputMaxDate(maxDate.toString());
 		searchM.setChecked(true);
-
-
 	}
 
-	public static void main(String[] args)  {
+	//TODO:テスト用後で消す
+	public void databaseTest()  {
+
 
 		System.out.println("★★★★★ ServiceMain called.");
 		String uri = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
 
-//	    MongoOperations mongoOps = new MongoTemplate(MongoClients.create(uri), "test");
-//	    mongoOps.insert(new Person("Joe", 34));
-//
-//	    System.out.println(mongoOps.findOne(new Query(where("name").is("Joe")), Person.class));
+	    MongoOperations mongoOps = new MongoTemplate(MongoClients.create(uri), "test");
+	    mongoOps.insert(new Person("Joe", 34));
+
+	    System.out.println(mongoOps.findOne(new Query(where("name").is("Joe")), Person.class));
 
 	  }
 
-	public void search() {
+	public void search(SearchModel searchM) {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
+		System.out.println("★★★★★ Service - search called.");
 
-		String minDate = searchM.getMinDate();
-		String maxDate = searchM.getMaxDate();
+		LocalDateTime inputMaxDate = toLocalDateTime(searchM.getInputMinDate() + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+		LocalDateTime inputMinDate = toLocalDateTime(searchM.getInputMaxDate() + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
 		boolean checked = searchM.isChecked();
 
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoUri), "test");
+		System.out.println(inputMaxDate);
+		System.out.println(inputMinDate);
+		System.out.println(checked);
 
-		//TODO:検索するクエリを記述する
+		Query query = new Query();
+
+		if (checked == true) {
+
+			//TODO:この書き方だと「ソッドを起動中に com.sun.jdi.InvocationException: Exception occurred in target VM が発生しました。」が表示される
+			query.addCriteria(Criteria.
+						where("person_to_visit").is("").
+						and("visited_at").gte(inputMinDate.toString()).
+						and("visited_at").lt(inputMaxDate.plusDays(1).toString()));
+
+			//query.addCriteria(Criteria.where("person_to_visit").is("").);
+			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
+
+			//TODO:検索するクエリを記述する
+			List<OfficeVisit> retList = mongoOps.find(query, OfficeVisit.class);
+			System.out.println(mongoOps.find(query, OfficeVisit.class));
+
+		} else {
+
+
+
+		}
 
 
 	}
@@ -75,43 +94,19 @@ public class VisitorListService {
 
 	}
 
+
+	public static LocalDateTime toLocalDateTime(String date, String format) {
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+        return LocalDateTime.parse(date, dtf);
+    }
+
 	public String getMessage() {
 		System.out.println("★★★★★ Service called.");
 		return "Hello. Hello " + visitorListRepository.getCustomer() + ".";
 
 	}
 
-
-
-	public String getMinDate() {
-		return minDate;
-	}
-
-
-
-	public void setMinDate(String minDate) {
-		this.minDate = minDate;
-	}
-
-
-
-	public String getMaxDate() {
-		return maxDate;
-	}
-
-
-
-	public void setMaxDate(String maxDate) {
-		this.maxDate = maxDate;
-	}
-
-	public SearchModel getSearchM() {
-		return searchM;
-	}
-
-	public void setSearchM(SearchModel searchM) {
-		this.searchM = searchM;
-	}
 
 
 

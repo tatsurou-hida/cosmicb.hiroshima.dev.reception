@@ -2,7 +2,8 @@ package com.example.demo;
 
 public class SearchModel {
 
-	private String minDate, maxDate;
+	private String inputMinDate;
+	private String inputMaxDate;
 	private boolean checked;
 
 	public boolean isChecked() {
@@ -13,20 +14,30 @@ public class SearchModel {
 		this.checked = checked;
 	}
 
-	public String getMinDate() {
-		return minDate;
+	public String getInputMinDate() {
+		return inputMinDate;
 	}
 
-	public void setMinDate(String minDate) {
-		this.minDate = minDate;
+	public void setInputMinDate(String inputMinDate) {
+		this.inputMinDate = inputMinDate;
 	}
 
-	public String getMaxDate() {
-		return maxDate;
+	public String getInputMaxDate() {
+		return inputMaxDate;
 	}
 
-	public void setMaxDate(String maxDate) {
-		this.maxDate = maxDate;
+	public void setInputMaxDate(String inputMaxDate) {
+		this.inputMaxDate = inputMaxDate;
 	}
+
+
+
+
+
+
+
+
+
+
 
 }

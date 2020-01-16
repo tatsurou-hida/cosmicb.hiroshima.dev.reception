@@ -16,6 +16,7 @@ public class VisitorListController {
 
 	@Autowired
 	private VisitorListService visitorListService;
+	private SearchModel searchM = new SearchModel();
 
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -23,13 +24,11 @@ public class VisitorListController {
 
 		System.out.println("★★★★★ Controller called.");
 
-		System.out.println(visitorListService.getMinDate());
-		System.out.println(visitorListService.getMaxDate());
+//		System.out.println(visitorListService.getMinDate());
+//		System.out.println(visitorListService.getMaxDate());
+		visitorListService.startPageInitialize(searchM);
 
-		model.addAttribute("searchM", visitorListService.getSearchM());
-
-		//VisitorListService.search();
-		VisitorListService.main(null);
+		model.addAttribute("searchM", searchM);
 
 		//Thymeleafを表示する;
 		return "VisitorList";
@@ -40,9 +39,12 @@ public class VisitorListController {
 	public String search(@ModelAttribute SearchModel searchM, Model model) {
 
 
+		//検索
+		visitorListService.search(searchM);
 
+
+		//form内の部品に値を入れる(入力内容の保持)
 		model.addAttribute("searchM", searchM);
-
 		//Thymeleafを表示する
 		return "VisitorList";
 
