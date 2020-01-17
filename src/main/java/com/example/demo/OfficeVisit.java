@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "visitor_list")
+@Document(collection = "officeVisit")
 public class OfficeVisit {
 
 	@Id
@@ -27,7 +27,7 @@ public class OfficeVisit {
 	private LocalDateTime left_at;			//退室日時
 
 	public OfficeVisit(
-
+			String _id,
 			String visitor_name,
 			String visitor_org,
 			int visitor_count,
@@ -35,6 +35,7 @@ public class OfficeVisit {
 			LocalDateTime visited_at,
 			LocalDateTime left_at) {
 
+		this._id = _id;
 		this.visitor_name = visitor_name;
 		this.visitor_org = visitor_org;
 		this.visitor_count = visitor_count;
@@ -43,6 +44,14 @@ public class OfficeVisit {
 		this.left_at = left_at;
 
 
+	}
+
+	public String get_id() {
+		return _id;
+	}
+
+	public void set_id(String _id) {
+		this._id = _id;
 	}
 
 	public String getVisitor_name() {
@@ -76,7 +85,8 @@ public class OfficeVisit {
 
 	@Override
     public String toString(){
-        return "visitor_name: " + visitor_name
+        return "_id: " + _id
+        		+ " visitor_name: " + visitor_name
         		+ " visitor_org: " + visitor_org
         		+ " visitor_count: " + visitor_count
         		+ " visited_at: " + visited_at.toString()

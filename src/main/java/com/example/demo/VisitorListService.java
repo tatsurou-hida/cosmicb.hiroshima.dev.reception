@@ -2,9 +2,13 @@ package com.example.demo;
 
 import static org.springframework.data.mongodb.core.query.Criteria.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +25,9 @@ public class VisitorListService {
 
 	@Autowired
 	private VisitorListRepository visitorListRepository;
-
 	final String MONGO_URI = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
+
+
 
 	public void startPageInitialize(SearchModel searchM) {
 
@@ -52,37 +57,55 @@ public class VisitorListService {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
 		System.out.println("★★★★★ Service - search called.");
 
-		LocalDateTime inputMaxDate = toLocalDateTime(searchM.getInputMinDate() + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
-		LocalDateTime inputMinDate = toLocalDateTime(searchM.getInputMaxDate() + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+		List<OfficeVisit> resultSearchList;
+
+		LocalDateTime inputMinDateTime = toLocalDateTime(searchM.getInputMinDate() + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+		LocalDateTime inputMaxDateTime = toLocalDateTime(searchM.getInputMaxDate() + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
 		boolean checked = searchM.isChecked();
 
-		System.out.println(inputMaxDate);
-		System.out.println(inputMinDate);
+		System.out.println(inputMaxDateTime);
+		System.out.println(inputMinDateTime);
 		System.out.println(checked);
+
+		//クエリ上の都合でinputMaxDateTimeに＋1日する
+		inputMaxDateTime = inputMaxDateTime.plusDays(1);
+		System.out.println(localDatetimeToDate(inputMaxDateTime));
+		System.out.println(localDatetimeToDate(inputMinDateTime));
 
 		Query query = new Query();
 
 		if (checked == true) {
+			//入室者検索
 
-			//TODO:この書き方だと「ソッドを起動中に com.sun.jdi.InvocationException: Exception occurred in target VM が発生しました。」が表示される
 			query.addCriteria(Criteria.
-						where("person_to_visit").is("").
-						and("visited_at").gte(inputMinDate.toString()).
-						and("visited_at").lt(inputMaxDate.plusDays(1).toString()));
+					where("person_to_visit").is("")
+					.andOperator(
+						Criteria.where("visited_at").gte(inputMinDateTime),
+						Criteria.where("visited_at").lt(inputMaxDateTime)
+					));
 
-			//query.addCriteria(Criteria.where("person_to_visit").is("").);
+
 			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
 
-			//TODO:検索するクエリを記述する
-			List<OfficeVisit> retList = mongoOps.find(query, OfficeVisit.class);
-			System.out.println(mongoOps.find(query, OfficeVisit.class));
+			resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		} else {
+			//全件検索
+			query.addCriteria(new Criteria()
+					.andOperator(
+						Criteria.where("visited_at").gte(inputMinDateTime),
+						Criteria.where("visited_at").lt(inputMaxDateTime)
+					));
 
+			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
 
+			resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		}
 
+		System.out.println(resultSearchList);
+
+		searchM.setResultSearchList(resultSearchList);
 
 	}
 
@@ -95,11 +118,21 @@ public class VisitorListService {
 	}
 
 
-	public static LocalDateTime toLocalDateTime(String date, String format) {
+	public LocalDateTime toLocalDateTime(String date, String format) {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
         return LocalDateTime.parse(date, dtf);
     }
+
+	public Date localDatetimeToDate(LocalDateTime localdatetime) {
+
+		localdatetime = localdatetime.minusHours(9);
+		ZoneId zone = ZoneId.systemDefault();
+		ZonedDateTime zonedDateTime = ZonedDateTime.of(localdatetime, zone);
+		Instant instant = zonedDateTime.toInstant();
+
+		return Date.from(instant);
+	}
 
 	public String getMessage() {
 		System.out.println("★★★★★ Service called.");
