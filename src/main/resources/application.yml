@@ -29,3 +29,9 @@ spring:
 # ENDPOINTS (AbstractEndpoint subclasses)
 #endpoints:
 #  enabled: true
+
+# Tesseract OCR
+tesseract:
+  traineddata:
+    path: src/main/resources/static/traineddata/tessdata
+    lang: jpn

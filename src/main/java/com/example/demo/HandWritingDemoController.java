@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.example.demo.config.SpringDataMongoDBConfig;
+
 import net.sourceforge.tess4j.TesseractException;
 
 @Controller
@@ -17,10 +19,23 @@ public class HandWritingDemoController {
 	@Autowired
 	private HandWritingDemoService service;
 
+	// TODO: サンプルにつき後で消す
+	@Autowired
+	private SpringDataMongoDBConfig config;
+
 	@RequestMapping(value = "/handwriting_demo", method = RequestMethod.GET)
 	public String index(Model model) {
 
 		model.addAttribute("form", new HandWritingDemoForm());
+
+		// TODO: サンプルにつき後で消す
+		System.out.println(config.getDatabase());
+		System.out.println(config.getHost());
+		System.out.println(config.getPassword());
+		System.out.println(config.getPort());
+		System.out.println(config.getUri());
+		System.out.println(config.getUsername());
+
 		return "handwriting_demo";
 	}
 

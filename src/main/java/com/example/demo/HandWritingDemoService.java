@@ -14,7 +14,10 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.config.TesseractConfig;
 
 import net.sourceforge.tess4j.ITessAPI.TessPageIteratorLevel;
 import net.sourceforge.tess4j.ITesseract;
@@ -24,6 +27,9 @@ import net.sourceforge.tess4j.Word;
 
 @Service
 public class HandWritingDemoService {
+
+	@Autowired
+	TesseractConfig config;
 
 	/**
 	 * @param dataURL data URI
@@ -41,8 +47,8 @@ public class HandWritingDemoService {
 		}
 
 		ITesseract tesseract = new Tesseract();
-		tesseract.setDatapath("src/main/resources/static/traineddata/tessdata"); // TODO: 設定ファイルに持たせる
-		tesseract.setLanguage("jpn"); // TODO: 設定ファイルに持たせる
+		tesseract.setDatapath(config.getTraineddata().getPath());
+		tesseract.setLanguage(config.getTraineddata().getLang());
 		tesseract.setTessVariable("user_defined_dpi", "72"); // 警告を抑止するために必要
 
 		return tesseract.doOCR(image);
@@ -63,14 +69,12 @@ public class HandWritingDemoService {
 		}
 
 		ITesseract tesseract = new Tesseract();
-		tesseract.setDatapath("src/main/resources/static/traineddata/tessdata"); // TODO: 設定ファイルに持たせる
-		tesseract.setLanguage("jpn"); // TODO: 設定ファイルに持たせる
+		tesseract.setDatapath(config.getTraineddata().getPath());
+		tesseract.setLanguage(config.getTraineddata().getLang());
 		tesseract.setTessVariable("user_defined_dpi", "72"); // 警告を抑止するために必要
 
 		return tesseract.getWords(image, TessPageIteratorLevel.RIL_BLOCK);
 	}
-
-
 
 	/**
 	 * OCR結果を元画像に重ねて出力する<br />
@@ -102,11 +106,11 @@ public class HandWritingDemoService {
 		graphics.dispose();
 
 		// BufferedImage -> data URIへ変換
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(image, "png", baos);
 
-        String data = DatatypeConverter.printBase64Binary(baos.toByteArray());
-        String imageString = "data:image/png;base64," + data;
+		String data = DatatypeConverter.printBase64Binary(baos.toByteArray());
+		String imageString = "data:image/png;base64," + data;
 
 		return imageString;
 

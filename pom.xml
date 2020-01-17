@@ -70,6 +70,11 @@
 			<artifactId>tess4j</artifactId>
 			<version>4.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 	<repositories>
