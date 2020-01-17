@@ -1,10 +1,21 @@
 package com.example.demo;
 
+import java.util.List;
+
 public class SearchModel {
 
 	private String inputMinDate;
 	private String inputMaxDate;
 	private boolean checked;
+	private List<OfficeVisit> resultSearchList;
+
+	public List<OfficeVisit> getResultSearchList() {
+		return resultSearchList;
+	}
+
+	public void setResultSearchList(List<OfficeVisit> resultSearchList) {
+		this.resultSearchList = resultSearchList;
+	}
 
 	public boolean isChecked() {
 		return checked;

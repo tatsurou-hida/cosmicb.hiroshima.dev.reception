@@ -39,17 +39,26 @@
 
 	<div style="height: 300px; overf; ow-y: scroll;">
 		<table>
-			<tr>
-				<td width="30"><input type="hidden" value="222" /></td>
-				<td width="200">01/01 00:45</td>
-				<td width="240">コスミックビジネス</td>
-				<td width="220">しらはたまなぶ</td>
-				<td width="150">00:40</td>
-				<td width="250"><input type="text" name="inputDest" /></td>
-				<td><input type="submit" value="退出処理" /></td>
+
+			<tr th:each="object : ${list}" th:object="${object}">
+
+				<td width="150" th:text="*{in_DateTime}" />
+				<td width="350" th:text="*{name}" />
+				<td width="150" th:text="*{company}" />
+				<td width="270">
+					<form action="#" th:action="@{/exit}" method="post">
+						<input type="hidden" th:text="*{_id}" />
+						<input type="text" th:field="*{person_to_visit}" /> <input
+							type="submit" value="退室処理" />
+					</form>
+				</td>
+
 			</tr>
+
 		</table>
+
 	</div>
+
 
 
 	<fieldset>
