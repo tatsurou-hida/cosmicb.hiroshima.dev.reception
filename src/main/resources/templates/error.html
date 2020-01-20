@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" media="all"
+	th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
+<title>Error</title>
+</head>
+<body>
+	<div class="container" style="height: 100%;">
+		<div class="row">
+			<div class="col">
+
+				<h1 th:text="${statusCode}" class="text-primary"></h1>
+				<h4 th:text="${statusName}" class="text-secondary"></h4>
+
+				<hr class="bg-primary" />
+
+				<p th:if="${statusCode} == 404">
+					<span>Oops, the page you're looking for does not exist.</span>
+				</p>
+				<p th:unless="${statusCode} == 404">
+					<span>Looks like we're having some server issues.</span>
+				</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
