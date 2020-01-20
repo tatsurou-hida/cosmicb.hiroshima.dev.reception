@@ -18,16 +18,9 @@ public class ReceptionController {
 
 	@RequestMapping(value="/reception", method=RequestMethod.GET)
 	public ModelAndView index(ModelAndView mv) {
-//		Date date = new Date();
-//		SimpleDateFormat dformat = new SimpleDateFormat("yyyy年MM月dd日 E曜日 H時mm分");
-//		String formattedDate = dformat.format(date);
-//		long millisec = date.getTime();
-//		String msstring = String.valueOf(millisec);
 
 		mv.setViewName("reception");
-//		mv.addObject("serverTime", formattedDate);
-//		mv.addObject("milliSec", millisec);
-//		mv.addObject("msString", msstring);
+
 		return mv;
 	}
 

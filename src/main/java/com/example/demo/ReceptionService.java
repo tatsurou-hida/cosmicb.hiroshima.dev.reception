@@ -27,9 +27,6 @@ public class ReceptionService {
 		//
 		DBinsert(name, org, number);
 
-//		System.out.println(name);
-//		System.out.println(org);
-//		System.out.println(number);
 	}
 
 	// ----------------------------------------------------------
@@ -39,14 +36,7 @@ public class ReceptionService {
 		LocalDateTime date = LocalDateTime.now();
 		LocalDateTime epoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 
-//		String target = "2019-02-17T04:33:37.00449Z";
-//		ZonedDateTime utc = ZonedDateTime.parse(target);
-//		ZonedDateTime jst = withZoneSameInstant(ZoneId.of("Asia/Tokyo"));
-//		System.out.println(jst.toLocalDate());
-
 		System.out.println("LocalDate" + date);
-//		ZonedDateTime date = ZonedDateTime.now(ZoneId.of("Asia/Tokyo"));
-//		ZonedDateTime epoch = ZonedDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneId.of("Asia/Tokyo"));
 
 		//
 		mongoOps.insert(new OfficeVisit(name, org, number, date, "", epoch));
