@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>訪 問 者 受 付 画 面</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+		<style>
+			sample {
+				position: relative;
+				display: block;
+				margin-bottom: 0.75rem;
+				background-color: #fff;
+				border-radius: 0.25rem;
+				border: 2px solid rgba(0, 0, 0, 0.25);
+				padding: 1.25rem;
+			}
+			.font-large {
+				font-size: 1.8rem;
+			}
+/*
+			body {
+				background-image: url(images/logo.jpg);
+				background-repeat: no-repeat;
+				background-position: center center;
+			}
+*/
+			#rotate {
+				-moz-transform:				rotate(-45deg);		/* -45度回転 */
+				-webkit-transform:			rotate(-45deg);
+				-ms-transform:				rotate(-45deg);
+				transform:					rotate(-45deg);
+				-moz-transform-origin:		top right;	/* 右上を回転軸に指定 */
+				-webkit-transform-origin:	top right;
+				-ms-transform-origin:		top right;
+				transform-origin:			top right;
+			}
+		</style>
+
+		<script type="text/javascript" th:inline="javascript">
+		function showClock1() {
+			var nowTime = new Date(); //  現在日時を得る
+			var nowHour = nowTime.getHours(); // 時を抜き出す
+			var nowMin  = nowTime.getMinutes(); // 分を抜き出す
+			var nowSec  = nowTime.getSeconds(); // 秒を抜き出す
+			var msg = "現在時刻は、" + nowHour + ":" + nowMin + ":" + nowSec + " です。";
+			document.getElementById("RealtimeClockArea").innerHTML = msg;
+		}
+		setInterval('showClock1()',1000);
+
+		<!-- 入力チェック -->
+			function check() {
+				var flag = 0;
+				var company = document.getElementById("input_comp_name").value;
+				var name = document.getElementById("input_visitor_name").value;
+				var num = document.getElementById("select_number").value;
+//				var mstime = /*[[${msString}]]*/;
+//				document.reception.mstime.value = /*[[${msString}]]*/;
+				if (name == "") {
+					alert("名前が入力されていません");
+				} else {
+					var r = confirm("送信してもよろしいですか？");
+					if (r) {
+						document.rece_form.action="result";	// controller
+						document.rece_form.method="post";
+						document.rece_form.submit();
+					}
+				}
+			}
+			/*]]>*/
+		</script>
+
+    </head>
+    <body>
+		<div class="sample col-xs-offset-2 col-xs-8">
+			<p>
+			<img src="images/logo30s.jpg" class="img-fluid" alt="Responsive image">
+			</p>
+			<div  style="background: url(images/039a.jpg) no-repeat 500px 8px;">
+			<div class="w-75 bg-primary text-white text-center font-weight-bold m-5 p-3 font-large">ようこそ　コスミックビジネスへ</div>
+			<p id="RealtimeClockArea"></p>
+			<form action="result" id="rece_form" name="reception" method="post">
+				<div class="form-group">
+					<label for="input_comp_name" >会社名・団体名</label><br>
+   					<div class="col-md-8">
+					<input type="text" class="form-control input-lg" name="input_comp_name" id="input_comp_name" rows="1">
+					</div><br><br>
+					<br>
+					<label for="input_visitor_name">お名前</label><br>
+   					<div class="col-md-8">
+						<input type="text" class="form-control input-lg" name="input_visitor_name" id="input_visitor_name" rows="1">
+					</div><br><br>
+					<br>
+					<div class="form-group">
+						<label for="exampleSelect1exampleFormControlSelect1">人数</label><br>
+						<div class="col-md-8">
+							<select class="form-control input-lg" name="select_number" id="select_number">
+								<option value="1">1人</option>
+								<option value="2">2人</option>
+								<option value="3">3人</option>
+								<option value="4">4人</option>
+								<option value="5">5人以上</option>
+							</select>
+						</div>
+					</div>
+					<br><br>
+					<!-- input type="hidden" name="mstime" value="" -->
+					<button type="button" class="btn btn-primary" onclick="check()">受付登録</button>
+				</div>
+			</form>
+
+			<!-- jsファイルの順番は、jquery、bootstrap.jsの順番で記述 --->
+			<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+			<script type="text/javascript" src="js/bootstrap.bundle.js"></script>
+			</div>
+		</div>
+	</body>
+
+
+</html>
