@@ -3,43 +3,43 @@ package com.example.demo;
 public class RowDataModel {
 
 	private String _id;
-	private String in_DateTime;
-	private String company;
-	private String name;
-	private String out_DateTime;
+	private String visitor_name;
+	private String visitor_org;
+	private String visited_at;
+	private String left_at;
 	private String person_to_visit;
 	private String diffTime;
-	private int visitor_Count;
 
 	public String get_id() {
 		return _id;
 	}
+	public String getVisitor_name() {
+		return visitor_name;
+	}
+	public void setVisitor_name(String visitor_name) {
+		this.visitor_name = visitor_name;
+	}
 	public void set_id(String _id) {
 		this._id = _id;
 	}
-	public String getIn_DateTime() {
-		return in_DateTime;
+
+	public String getVisitor_org() {
+		return visitor_org;
 	}
-	public void setIn_DateTime(String in_DateTime) {
-		this.in_DateTime = in_DateTime;
+	public void setVisitor_org(String visitor_org) {
+		this.visitor_org = visitor_org;
 	}
-	public String getCompany() {
-		return company;
+	public String getVisited_at() {
+		return visited_at;
 	}
-	public void setCompany(String company) {
-		this.company = company;
+	public void setVisited_at(String visited_at) {
+		this.visited_at = visited_at;
 	}
-	public String getName() {
-		return name;
+	public String getLeft_at() {
+		return left_at;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getOut_DateTime() {
-		return out_DateTime;
-	}
-	public void setOut_DateTime(String out_DateTime) {
-		this.out_DateTime = out_DateTime;
+	public void setLeft_at(String left_at) {
+		this.left_at = left_at;
 	}
 	public String getPerson_to_visit() {
 		return person_to_visit;
@@ -53,13 +53,13 @@ public class RowDataModel {
 	public void setDiffTime(String diffTime) {
 		this.diffTime = diffTime;
 	}
-	public int getVisitor_Count() {
-		return visitor_Count;
+	public int getVisitor_count() {
+		return visitor_count;
 	}
-	public void setVisitor_Count(int visitor_Count) {
-		this.visitor_Count = visitor_Count;
+	public void setVisitor_count(int visitor_count) {
+		this.visitor_count = visitor_count;
 	}
-
+	private int visitor_count;
 
 
 }

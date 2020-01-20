@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>管 理 画 面</title>
+<style>
+@import
+url("/css/visitorlist.css")
+</style>
+
+<script src="/script/visitorlist.js"></script>
 </head>
 <body>
 	<h1>管理画面</h1>
@@ -12,60 +18,56 @@
 		<form action="#" th:action="@{/search}" method="post"
 			th:object="${searchM}">
 			<p>
-				入室日： <input type="date" min="2020-01-01" th:field="*{inputMinDate}" />
-				～ <input type="date" min="2020-01-01" th:field="*{inputMaxDate}" />
+				入室日：
+				<input type="date" min="2020-01-01" th:field="*{inputMinDate}" />
+				～
+				<input type="date" min="2020-01-01" th:field="*{inputMaxDate}" />
 			</p>
 			<p>
-				<!-- 				TODO: label forの属性値はソースを見て決める？"*{checked}"でいけるのかな？ -->
-				<label th:for="checked1">未退室のみ</label> <input type="checkbox"
-					th:field="*{checked}" />
+				<label th:for="checked1">未退室のみ</label>
+				<input type="checkbox" th:field="*{checked}" />
 			</p>
 			<input type="submit" value="検索" />
 		</form>
 	</fieldset>
 
-	<div style="height: 50px; width: 1500px;">
+	<div style="height: 350px; overf; ow-y: scroll;">
 		<table>
-			<tr>
-				<th width="200">入室日時</th>
-				<th width="220">所属/会社名</th>
-				<th width="200">訪問者名</th>
-				<th width="200">経過時間</th>
-				<th width="200">訪問先</th>
-				<th width="200">退室処理</th>
-			</tr>
-		</table>
-	</div>
+			<thead>
+				<tr>
+					<th width="200">入室日時</th>
+					<th width="300">所属/会社名</th>
+					<th width="200">訪問者名</th>
+					<th width="150">経過時間</th>
+					<th width="360">訪 問 先</th>
+				</tr>
+			</thead>
 
-	<div style="height: 300px; overf; ow-y: scroll;">
-		<table>
+			<tbody>
+				<tr th:each="row : ${list}">
 
-			<tr th:each="object : ${list}" th:object="${object}">
-
-				<td width="150" th:text="*{in_DateTime}" />
-				<td width="350" th:text="*{name}" />
-				<td width="150" th:text="*{company}" />
-				<td width="270">
-					<form action="#" th:action="@{/exit}" method="post">
-						<input type="hidden" th:text="*{_id}" />
-						<input type="text" th:field="*{person_to_visit}" /> <input
-							type="submit" value="退室処理" />
-					</form>
-				</td>
-
-			</tr>
+					<td th:text="${row.visited_at}" />
+					<td th:text="${row.visitor_org}" />
+					<td th:text="${row.visitor_name}" />
+					<td th:text="${row.diffTime}" />
+					<td>
+						<form action="#" th:action="@{/exit/{id}(id=${row._id})}" method="post" th:object="${sendModel}">
+							<input type="text" th:field="*{person_to_visit}" />
+							<input type="submit" value="退室処理" />
+						</form>
+					</td>
+				</tr>
+			</tbody>
 
 		</table>
 
 	</div>
-
-
 
 	<fieldset>
 		<legend>データの消去</legend>
 		<form action="#" th:action="@{/delete}" method="post">
 			<input type="submit" value="データ削除" />
-			36カ月以上経過した退室済みデータをデータベースから削除します
+			<p th:text="${delM.period}"></p> 以上経過した退室済みデータをデータベースから削除します
 		</form>
 	</fieldset>
 
