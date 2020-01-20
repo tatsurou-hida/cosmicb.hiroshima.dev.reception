@@ -35,3 +35,8 @@ tesseract:
   traineddata:
     path: src/main/resources/static/traineddata/tessdata
     lang: jpn
+
+retention:
+  persontovisit:
+    period: 36
+    logfilepath: log/persontovisit.log

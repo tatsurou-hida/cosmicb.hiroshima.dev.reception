@@ -12,12 +12,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.config.RetentionConfig;
 import com.mongodb.client.MongoClients;
 
 @Service
@@ -83,6 +86,7 @@ public class VisitorListService {
 						Criteria.where("visited_at").gte(inputMinDateTime),
 						Criteria.where("visited_at").lt(inputMaxDateTime)
 					));
+			query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
 
 
 			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
@@ -96,6 +100,7 @@ public class VisitorListService {
 						Criteria.where("visited_at").gte(inputMinDateTime),
 						Criteria.where("visited_at").lt(inputMaxDateTime)
 					));
+			query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
 
 			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
 
@@ -109,13 +114,32 @@ public class VisitorListService {
 
 	}
 
-	private void updateVisitorLeft(int id) {
+
+	public void updateVisitorLeft(String id, String personToVisit) {
 
 
+		Query query = new Query();
+		query.addCriteria(Criteria.where("_id").is(id));
 
+		Update update = new Update();
+		update.set("left_at", LocalDateTime.now());
+		update.set("person_to_visit", personToVisit);
+
+		//DB接続
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
+		//DB更新
+		mongoOps.updateFirst(query, update, OfficeVisit.class);
 
 
 	}
+
+
+	public void setDeletePeriod(RetentionConfig rConfig, DeleteModel delM) {
+
+		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
+
+	}
+
 
 
 	public LocalDateTime toLocalDateTime(String date, String format) {
