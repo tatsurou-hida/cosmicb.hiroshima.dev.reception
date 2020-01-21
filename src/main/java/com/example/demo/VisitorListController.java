@@ -7,6 +7,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,24 +18,40 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.example.demo.config.RetentionConfig;
+import com.example.demo.config.SpringDataMongoDBConfig;
 
 @Controller
 @EnableAutoConfiguration
 @ComponentScan
+@SessionAttributes(value = "searchM")
 public class VisitorListController {
 
 	@Autowired
 	private VisitorListService visitorListService;
 	@Autowired
+	private SpringDataMongoDBConfig mongoConfig;
+	@Autowired
 	private RetentionConfig rConfig;
+
+	protected final static Logger logger = LoggerFactory.getLogger(VisitorListController.class);
+
+	@ModelAttribute("searchM")
+	SearchModel searchForm() {
+		logger.trace("create searchForm");
+        //System.out.println("create inputForm");
+        return new SearchModel ();
+	}
 
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String index(SearchModel searchM, Model model) {
 
-		SearchModel searchM = new SearchModel();
+		//SearchModel searchM = new SearchModel();
+		//SearchModel searchM = searchForm;
 		DeleteModel delM = new DeleteModel();
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
@@ -44,13 +62,13 @@ public class VisitorListController {
 		visitorListService.setDeletePeriod(rConfig, delM);
 
 		//検索
-		visitorListService.search(searchM);
+		visitorListService.search(searchM, mongoConfig);
 
 		// 検索結果entityをmodelに設定
 		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(searchM, modelList);
 
-		model.addAttribute("delM",delM);
+		model.addAttribute("delM", delM);
 		model.addAttribute("searchM", searchM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
@@ -63,11 +81,26 @@ public class VisitorListController {
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public String search(@ModelAttribute SearchModel searchM, Model model) {
 
+		DeleteModel delM = new DeleteModel();
+
+		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
+
+		//保存期間の設定を読み込む
+		visitorListService.setDeletePeriod(rConfig, delM);
+
 		//検索
-		visitorListService.search(searchM);
+		visitorListService.search(searchM, mongoConfig);
+
+		// 検索結果entityをmodelに設定
+		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
+		modelList = makeList(searchM, modelList);
 
 		//form内の部品に値を入れる(入力内容の保持)
+		model.addAttribute("delM",delM);
 		model.addAttribute("searchM", searchM);
+		model.addAttribute("sendModel", sendModel);
+		model.addAttribute("list", modelList);
+
 		//Thymeleafを表示する
 		return "VisitorList";
 
@@ -76,12 +109,44 @@ public class VisitorListController {
 
 	@RequestMapping(value = "/exit/{id}", method = RequestMethod.POST)
 	private String exit(@PathVariable("id") String _id,
-						@ModelAttribute VisitorListExitSendModel sendModel, Model model) {
+						@ModelAttribute VisitorListExitSendModel sendModel,
+						@SessionAttribute SearchModel searchM,
+						Model model) {
+
+		//SearchModel searchM = new SearchModel();
+		//SearchModel searchM = searchForm;
+		DeleteModel delM = new DeleteModel();
+
 
 		//退室処理のパラメータをサービスに渡す
-		visitorListService.updateVisitorLeft(_id, sendModel.getPerson_to_visit());
+		visitorListService.updateVisitorLeft(_id, sendModel.getPerson_to_visit(), mongoConfig);
 
-		index(model);
+
+		//保存期間の設定を読み込む
+		visitorListService.setDeletePeriod(rConfig, delM);
+
+		//検索
+		visitorListService.search(searchM, mongoConfig);
+
+		// 検索結果entityをmodelに設定
+		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
+		modelList = makeList(searchM, modelList);
+
+		//form内の部品に値を入れる(入力内容の保持)
+		model.addAttribute("delM",delM);
+		model.addAttribute("searchM", searchM);
+		model.addAttribute("sendModel", sendModel);
+		model.addAttribute("list", modelList);
+
+		//Thymeleafを表示する;
+		return "VisitorList";
+	}
+
+	@RequestMapping(value= "/delete", method = RequestMethod.POST)
+	private String delete(Model model ) {
+
+		//削除処理
+		visitorListService.deleteVisitorList(mongoConfig, rConfig);
 
 		//Thymeleafを表示する;
 		return "VisitorList";

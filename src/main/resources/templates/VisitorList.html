@@ -23,10 +23,9 @@ url("/css/visitorlist.css")
 				～
 				<input type="date" min="2020-01-01" th:field="*{inputMaxDate}" />
 			</p>
-			<p>
-				<label th:for="checked1">未退室のみ</label>
-				<input type="checkbox" th:field="*{checked}" />
-			</p>
+
+			<label th:for="checked1">未退室のみ</label>
+			<input type="checkbox" th:field="*{checked}" />
 			<input type="submit" value="検索" />
 		</form>
 	</fieldset>
@@ -39,7 +38,8 @@ url("/css/visitorlist.css")
 					<th width="300">所属/会社名</th>
 					<th width="200">訪問者名</th>
 					<th width="150">経過時間</th>
-					<th width="360">訪 問 先</th>
+					<th width="300">訪 問 先</th>
+					<th width="200">退室時間</th>
 				</tr>
 			</thead>
 
@@ -52,9 +52,19 @@ url("/css/visitorlist.css")
 					<td th:text="${row.diffTime}" />
 					<td>
 						<form action="#" th:action="@{/exit/{id}(id=${row._id})}" method="post" th:object="${sendModel}">
-							<input type="text" th:field="*{person_to_visit}" />
-							<input type="submit" value="退室処理" />
+							<div th:if="${row.person_to_visit ==''}">
+								<input type="text" th:field="*{person_to_visit}" />
+								<input 	type="submit" value="退室処理" />
+							</div>
+							<div th:unless="${row.person_to_visit ==''}">
+								<span th:text="${row.person_to_visit}" /></span>
+							</div>
 						</form>
+					</td>
+					<td>
+						<div th:unless="${row.person_to_visit ==''}">
+							<span th:text="${row.left_at}"></span>
+						</div>
 					</td>
 				</tr>
 			</tbody>
@@ -67,7 +77,7 @@ url("/css/visitorlist.css")
 		<legend>データの消去</legend>
 		<form action="#" th:action="@{/delete}" method="post">
 			<input type="submit" value="データ削除" />
-			<p th:text="${delM.period}"></p> 以上経過した退室済みデータをデータベースから削除します
+			<span th:text="'　' + ${delM.period} + 'カ月以上経過した退室済みデータをデータベースから削除します'"></span>
 		</form>
 	</fieldset>
 
