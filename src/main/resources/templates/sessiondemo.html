@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>session demo</title>
+<link rel="stylesheet" media="all"
+	th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
+</head>
+<body>
+	<div class="container">
+
+		<div class="row p-3">
+			<div class="col">
+				<form th:action="@{/sessiondemo/postform}" method="post"
+					th:object="${form}">
+					<div class="form-group">
+						<label th:for="*{field1}">Field 1</label>
+						<input type="text" th:field="*{field1}" class="form-control" />
+					</div>
+					<div class="form-group">
+						<label th:for="*{field2}">Field 2</label>
+						<input type="text" th:field="*{field2}" class="form-control" />
+					</div>
+					<button class="btn btn-primary" type="submit">post</button>
+				</form>
+			</div>
+		</div>
+		<div class="row p-3">
+			<div class="col">
+				<p>
+					<a th:href="@{/sessiondemo}">initial page (GET)</a>
+				</p>
+				<p>
+					<a th:href="@{/sessiondemo/other}">out of form action (GET)</a>
+				</p>
+
+				<hr class="bg-primary" />
+				<p>
+					<a th:href="@{/sessiondemo/complete}" class="text-danger">session
+						complete (GET)</a>
+				</p>
+			</div>
+		</div>
+
+	</div>
+
+</body>
+</html>
