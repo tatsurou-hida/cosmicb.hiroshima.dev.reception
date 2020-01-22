@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.service;
 
 import static org.springframework.data.mongodb.core.query.Criteria.*;
 
@@ -27,8 +27,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.OfficeVisit;
+import com.example.demo.Person;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
+import com.example.demo.form.SearchModel;
+import com.example.demo.repository.VisitorListRepository;
 import com.mongodb.client.MongoClients;
 
 @Service
@@ -36,7 +40,7 @@ public class VisitorListService {
 
 	@Autowired
 	private VisitorListRepository visitorListRepository;
-	//final String MONGO_URI = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
+
 	protected final static Logger logger = LoggerFactory.getLogger(VisitorListService.class);
 
 	public void startPageInitialize(SearchModel searchM) {
@@ -99,9 +103,6 @@ public class VisitorListService {
 						Criteria.where("visited_at").gte(inputMinDateTime),
 						Criteria.where("visited_at").lt(inputMaxDateTime)
 					));
-			//query.addCriteria(Criteria.where("person_to_visit").is("白幡"));
-
-
 		}
 
 		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
@@ -109,10 +110,6 @@ public class VisitorListService {
 		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		return resultSearchList;
-
-//		System.out.println(resultSearchList);
-//
-//		searchM.setResultSearchList(resultSearchList);
 
 	}
 
@@ -162,11 +159,11 @@ public class VisitorListService {
 		for (int i=0; i < resultSearchList.size(); i++) {
 
 			query = new Query();
-//			query.addCriteria(Criteria
-//					.where("_id").is(resultSearchList.get(i).get_id())
-//					);
-//			mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
-//			mongoOps.remove(query, OfficeVisit.class);
+			query.addCriteria(Criteria
+					.where("_id").is(resultSearchList.get(i).get_id())
+					);
+			mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+			mongoOps.remove(query, OfficeVisit.class);
 
 			//ログ書き込み
 			try
@@ -221,12 +218,6 @@ public class VisitorListService {
 		}
 	}
 
-
-	public void setDeletePeriod(RetentionConfig rConfig, DeleteModel delM) {
-
-		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
-
-	}
 
 	public LocalDateTime toLocalDateTime(String date, String format) {
 

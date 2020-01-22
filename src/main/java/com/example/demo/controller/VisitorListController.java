@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,8 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.example.demo.OfficeVisit;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
+import com.example.demo.form.DeleteModel;
+import com.example.demo.form.RowDataModel;
+import com.example.demo.form.SearchModel;
+import com.example.demo.form.VisitorListExitSendModel;
+import com.example.demo.service.VisitorListService;
 
 @Controller
 @EnableAutoConfiguration
@@ -47,9 +53,6 @@ public class VisitorListController {
 		//初期化
 
 		SearchModel init = new SearchModel();
-		//		init.setInputMaxDate(LocalDate.now().toString());
-		//		init.setInputMinDate(LocalDate.now().minusDays(7).toString());
-		//		init.setChecked(true);
 		visitorListService.startPageInitialize(init);
 
 		logger.info(init.toString());
@@ -58,25 +61,16 @@ public class VisitorListController {
 
 	}
 
-	//	SearchModel searchForm() {
-	//		logger.trace("create searchForm");
-	//        //System.out.println("create inputForm");
-	//        return new SearchModel ();
-	//	}
-
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String index(@ModelAttribute("s") SearchModel s, Model model) {
 
-		//SearchModel searchM = new SearchModel();
-		//SearchModel searchM = searchForm;
 		DeleteModel delM = new DeleteModel();
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
 		System.out.println("★★★★★ Controller called.");
-		//visitorListService.startPageInitialize(searchM);
 
-		//保存期間の設定を読み込む　コントローラから設定へ！
-		visitorListService.setDeletePeriod(rConfig, delM);
+		//保存期間の設定を読み込んでDeleteModelにセットする
+		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -102,8 +96,8 @@ public class VisitorListController {
 
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
-		//保存期間の設定を読み込む　コントローラから設定へ！
-		visitorListService.setDeletePeriod(rConfig, delM);
+		//保存期間の設定を読み込んでDeleteModelにセットする
+		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -129,15 +123,13 @@ public class VisitorListController {
 			@ModelAttribute("s") SearchModel s,
 			Model model) {
 
-		//SearchModel searchM = new SearchModel();
-		//SearchModel searchM = model.getAttribute("s");
 		DeleteModel delM = new DeleteModel();
 
 		//退室処理のパラメータをサービスに渡す
 		visitorListService.updateVisitorLeft(_id, sendModel.getPerson_to_visit(), mongoConfig);
 
-		//保存期間の設定を読み込む　コントローラから設定へ！
-		visitorListService.setDeletePeriod(rConfig, delM);
+		//保存期間の設定を読み込んでDeleteModelにセットする
+		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -177,8 +169,8 @@ public class VisitorListController {
 					+ "消去対象データはデータベースから消去されている場合があります。";
 		}
 
-		//保存期間の設定を読み込む　コントローラから設定へ！
-		visitorListService.setDeletePeriod(rConfig, delM);
+		//保存期間の設定を読み込んでDeleteModelにセットする
+		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -203,9 +195,6 @@ public class VisitorListController {
 		for (OfficeVisit e : list) {
 			RowDataModel m = new RowDataModel();
 
-			//String s1 = e.getVisited_at().format(DateTimeFormatter.ISO_LOCAL_DATE);
-			//String s2= LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-
 			//入室時間の書式変更⇒文字列化
 			if (e.getVisited_at().format(DateTimeFormatter.ISO_LOCAL_DATE)
 					.equals(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE))) {
@@ -217,11 +206,9 @@ public class VisitorListController {
 				m.setVisited_at(e.getVisited_at().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
 			}
 
-			//String s3 = e.getLeft_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
 			//退室時間の書式変更⇒文字列化
 			if (e.getLeft_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-					.equals("2000-01-01 09:00:00")) {
+					.equals("2000-01-01 00:00:00")) {
 				//退室時間されていない場合
 				m.setLeft_at("");
 			} else {

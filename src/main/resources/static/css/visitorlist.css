@@ -1,4 +1,26 @@
 @charset "UTF-8";
-#person_to_visit{
-	width:	150px;
+
+.container {
+	max-width: 1500px;
 }
+
+footer {
+	margin-top: auto;
+}
+
+table tr {
+	height: 20px;
+}
+
+/* テーブルの中身を中央寄せ */
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+vertical-align: middle;
+}
+
+:required {
+  border-style: solid;
+}
+
+/* #person_to_visit{
+	width:	150px;
+} */
