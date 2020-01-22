@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.example.demo.config.RetentionConfig;
@@ -27,7 +26,7 @@ import com.example.demo.config.SpringDataMongoDBConfig;
 @Controller
 @EnableAutoConfiguration
 @ComponentScan
-@SessionAttributes(value = "searchM")
+@SessionAttributes("s")
 public class VisitorListController {
 
 	@Autowired
@@ -39,12 +38,29 @@ public class VisitorListController {
 
 	protected final static Logger logger = LoggerFactory.getLogger(VisitorListController.class);
 
-	@ModelAttribute("searchM")
-	SearchModel searchForm() {
-		logger.trace("create searchForm");
-        //System.out.println("create inputForm");
-        return new SearchModel ();
+	@ModelAttribute("s")
+	public SearchModel getNewInstance() {
+
+		logger.info("=================================");
+		logger.info("Create new instance for a session");
+
+		//初期化
+		SearchModel init = new SearchModel();
+		init.setInputMaxDate(LocalDate.now().toString());
+		init.setInputMinDate(LocalDate.now().minusDays(7).toString());
+		init.setChecked(true);
+
+		logger.info(init.toString());
+
+		return init;
+
 	}
+
+//	SearchModel searchForm() {
+//		logger.trace("create searchForm");
+//        //System.out.println("create inputForm");
+//        return new SearchModel ();
+//	}
 
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -69,9 +85,11 @@ public class VisitorListController {
 		modelList = makeList(searchM, modelList);
 
 		model.addAttribute("delM", delM);
-		model.addAttribute("searchM", searchM);
+		//model.addAttribute("searchM", searchM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
+
+		logger.info(model.getAttribute("s").toString());
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
@@ -79,7 +97,8 @@ public class VisitorListController {
 
 
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public String search(@ModelAttribute SearchModel searchM, Model model) {
+	public String search(@ModelAttribute SearchModel searchM,
+						 @ModelAttribute("s") SearchModel s, Model model ) {
 
 		DeleteModel delM = new DeleteModel();
 
@@ -95,9 +114,17 @@ public class VisitorListController {
 		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(searchM, modelList);
 
+		s.setInputMaxDate(searchM.getInputMaxDate());
+		s.setInputMinDate(searchM.getInputMinDate());
+
+		//searchM.setInputMaxDate(searchM.getInputMaxDate());
+		//searchM.setInputMinDate(searchM.getInputMinDate());
+
+		logger.info(model.getAttribute("s").toString());
+
 		//form内の部品に値を入れる(入力内容の保持)
 		model.addAttribute("delM",delM);
-		model.addAttribute("searchM", searchM);
+		//model.addAttribute("searchM", searchM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 
@@ -110,12 +137,13 @@ public class VisitorListController {
 	@RequestMapping(value = "/exit/{id}", method = RequestMethod.POST)
 	private String exit(@PathVariable("id") String _id,
 						@ModelAttribute VisitorListExitSendModel sendModel,
-						@SessionAttribute SearchModel searchM,
+						@ModelAttribute("s") SearchModel searchM,
 						Model model) {
 
 		//SearchModel searchM = new SearchModel();
-		//SearchModel searchM = searchForm;
+		//SearchModel searchM = model.getAttribute("s");
 		DeleteModel delM = new DeleteModel();
+
 
 
 		//退室処理のパラメータをサービスに渡す
@@ -125,12 +153,17 @@ public class VisitorListController {
 		//保存期間の設定を読み込む
 		visitorListService.setDeletePeriod(rConfig, delM);
 
+
+
 		//検索
 		visitorListService.search(searchM, mongoConfig);
 
 		// 検索結果entityをmodelに設定
 		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(searchM, modelList);
+
+		logger.info(model.getAttribute("s").toString());
+
 
 		//form内の部品に値を入れる(入力内容の保持)
 		model.addAttribute("delM",delM);

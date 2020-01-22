@@ -128,6 +128,7 @@ public class VisitorListService {
 
 	}
 
+
 	public String deleteVisitorList(SpringDataMongoDBConfig mongoConfig, RetentionConfig rConfig) {
 
 		List<OfficeVisit> resultSearchList;

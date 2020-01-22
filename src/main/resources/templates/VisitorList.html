@@ -16,7 +16,7 @@ url("/css/visitorlist.css")
 		<legend>日付フィルター</legend>
 
 		<form action="#" th:action="@{/search}" method="post"
-			th:object="${searchM}">
+			th:object="${s}">
 			<p>
 				入室日：
 				<input type="date" min="2020-01-01" th:field="*{inputMinDate}" />
@@ -53,7 +53,7 @@ url("/css/visitorlist.css")
 					<td>
 						<form action="#" th:action="@{/exit/{id}(id=${row._id})}" method="post" th:object="${sendModel}">
 							<div th:if="${row.person_to_visit ==''}">
-								<input type="text" th:field="*{person_to_visit}" />
+								<input type="text" name="person_to_visit" value="" />
 								<input 	type="submit" value="退室処理" />
 							</div>
 							<div th:unless="${row.person_to_visit ==''}">
