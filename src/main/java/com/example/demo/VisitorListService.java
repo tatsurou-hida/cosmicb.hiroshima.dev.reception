@@ -2,6 +2,10 @@ package com.example.demo;
 
 import static org.springframework.data.mongodb.core.query.Criteria.*;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.config.RetentionConfig;
+import com.example.demo.config.SpringDataMongoDBConfig;
 import com.mongodb.client.MongoClients;
 
 @Service
@@ -28,8 +33,7 @@ public class VisitorListService {
 
 	@Autowired
 	private VisitorListRepository visitorListRepository;
-	final String MONGO_URI = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
-
+	//final String MONGO_URI = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
 
 
 	public void startPageInitialize(SearchModel searchM) {
@@ -56,7 +60,7 @@ public class VisitorListService {
 
 	  }
 
-	public void search(SearchModel searchM) {
+	public void search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig) {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
 		System.out.println("★★★★★ Service - search called.");
 
@@ -72,12 +76,10 @@ public class VisitorListService {
 
 		//クエリ上の都合でinputMaxDateTimeに＋1日する
 		inputMaxDateTime = inputMaxDateTime.plusDays(1);
-		System.out.println(localDatetimeToDate(inputMaxDateTime));
-		System.out.println(localDatetimeToDate(inputMinDateTime));
 
 		Query query = new Query();
 
-		if (checked == true) {
+		if (checked) {
 			//入室者検索
 
 			query.addCriteria(Criteria.
@@ -86,12 +88,6 @@ public class VisitorListService {
 						Criteria.where("visited_at").gte(inputMinDateTime),
 						Criteria.where("visited_at").lt(inputMaxDateTime)
 					));
-			query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
-
-
-			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
-
-			resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		} else {
 			//全件検索
@@ -100,13 +96,14 @@ public class VisitorListService {
 						Criteria.where("visited_at").gte(inputMinDateTime),
 						Criteria.where("visited_at").lt(inputMaxDateTime)
 					));
-			query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+			//query.addCriteria(Criteria.where("person_to_visit").is("白幡"));
 
-			MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
-
-			resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		}
+
+		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		System.out.println(resultSearchList);
 
@@ -115,8 +112,7 @@ public class VisitorListService {
 	}
 
 
-	public void updateVisitorLeft(String id, String personToVisit) {
-
+	public void updateVisitorLeft(String id, String personToVisit, SpringDataMongoDBConfig mongoConfig) {
 
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(id));
@@ -126,11 +122,92 @@ public class VisitorListService {
 		update.set("person_to_visit", personToVisit);
 
 		//DB接続
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(MONGO_URI), "database");
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
 		//DB更新
 		mongoOps.updateFirst(query, update, OfficeVisit.class);
 
+	}
 
+	public String deleteVisitorList(SpringDataMongoDBConfig mongoConfig, RetentionConfig rConfig) {
+
+		List<OfficeVisit> resultSearchList;
+
+
+		//保存期間を設定ファイルから取得
+		int period = rConfig.getPersontovisit().getPeriod();
+		LocalDateTime startingDate = LocalDateTime.now().minusMonths(period);
+		//保存先を設定ファイルから取得
+		String logFileName = rConfig.getPersontovisit().getLogfilepath();
+		File file = new File(logFileName);
+
+		//消去対象ログを取得
+		Query query = new Query();
+		query.addCriteria(new Criteria()
+				.andOperator(
+					Criteria.where("visited_at").lt(startingDate),
+					Criteria.where("person_to_visit").ne("")
+				));
+		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+		resultSearchList = mongoOps.find(query, OfficeVisit.class);
+
+		//取得したログに対してそれぞれ消去していく
+		for (int i=0; i < resultSearchList.size(); i++) {
+
+			query = new Query();
+//			query.addCriteria(Criteria
+//					.where("_id").is(resultSearchList.get(i).get_id())
+//					);
+//			mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+//			mongoOps.remove(query, OfficeVisit.class);
+
+			//ログ書き込み
+			try {
+				BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+				if (checkFileState(file)) {
+
+					bw.write(LocalDateTime.now().format(
+							DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ",");
+					bw.write(resultSearchList.get(i).get_id() + ",");
+					bw.write(resultSearchList.get(i).getVisited_at().format(
+							DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ",");
+					bw.write(resultSearchList.get(i).getVisitor_org() + ",");
+					bw.write(resultSearchList.get(i).getVisitor_name() + ",");
+					bw.write(resultSearchList.get(i).getVisitor_count() + ",");
+					bw.write(resultSearchList.get(i).getPerson_to_visit() + ",");
+					bw.write(resultSearchList.get(i).getLeft_at().format(
+							DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+					bw.newLine();
+					bw.close();
+				} else {
+					//ログファイルに書き込みできない場合
+					return "error";
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "error";
+			}
+		}
+		return "success";
+	}
+
+	private boolean checkFileState(File f) {
+
+		int count =0;
+
+		if (f.canWrite()) {
+			return true;
+		} else {
+			while (f.canWrite()==false) {
+				count ++;
+				if (count > 100) {
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 
 
@@ -139,8 +216,6 @@ public class VisitorListService {
 		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 	}
-
-
 
 	public LocalDateTime toLocalDateTime(String date, String format) {
 
@@ -158,11 +233,6 @@ public class VisitorListService {
 		return Date.from(instant);
 	}
 
-	public String getMessage() {
-		System.out.println("★★★★★ Service called.");
-		return "Hello. Hello " + visitorListRepository.getCustomer() + ".";
-
-	}
 
 
 

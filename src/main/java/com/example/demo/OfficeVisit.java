@@ -121,12 +121,8 @@ public class OfficeVisit {
 
 	@Override
 	public String toString() {
-		return "_id: " + _id
-				+ " visitor_name: " + visitor_name
-				+ " visitor_org: " + visitor_org
-				+ " visitor_count: " + visitor_count
-				+ " visited_at: " + visited_at.toString()
-				+ " person_to_visit: " + person_to_visit
-				+ " left_at: " + left_at.toString();
+		return "OfficeVisit [_id=" + _id + ", visitor_name=" + visitor_name + ", visitor_org=" + visitor_org
+				+ ", visitor_count=" + visitor_count + ", visited_at=" + visited_at + ", person_to_visit="
+				+ person_to_visit + ", left_at=" + left_at + "]";
 	}
 }
