@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import java.io.IOException;
 
@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.example.demo.config.SpringDataMongoDBConfig;
+import com.example.demo.form.HandWritingDemoForm;
+import com.example.demo.service.HandWritingDemoService;
 
 import net.sourceforge.tess4j.TesseractException;
 
