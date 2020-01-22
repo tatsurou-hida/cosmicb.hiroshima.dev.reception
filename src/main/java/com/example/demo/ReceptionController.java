@@ -27,12 +27,12 @@ public class ReceptionController {
 	//
 	@RequestMapping(value="/result", method=RequestMethod.POST)
 	public ModelAndView result(
-			@RequestParam("input_comp_name") String input_comp_name,
-			@RequestParam("input_visitor_name") String input_visitor_name,
-			@RequestParam("select_number") Integer select_number,
+			@RequestParam("inputName") String inputName,
+			@RequestParam("inputCompany") String inputCompany,
+			@RequestParam("inputNum") Integer inputNum,
 					ModelAndView mv) {
 
-		service.insertVisitor(input_comp_name,input_visitor_name,select_number);
+		service.insertVisitor(inputCompany,inputName,inputNum);
 
 		mv.setViewName("reception");	// HTML
 
