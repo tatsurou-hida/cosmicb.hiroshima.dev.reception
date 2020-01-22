@@ -4,6 +4,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
@@ -15,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -34,7 +37,7 @@ public class VisitorListService {
 	@Autowired
 	private VisitorListRepository visitorListRepository;
 	//final String MONGO_URI = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
-
+	protected final static Logger logger = LoggerFactory.getLogger(VisitorListService.class);
 
 	public void startPageInitialize(SearchModel searchM) {
 
@@ -60,7 +63,7 @@ public class VisitorListService {
 
 	  }
 
-	public void search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig) {
+	public List<OfficeVisit> search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig) {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
 		System.out.println("★★★★★ Service - search called.");
 
@@ -105,9 +108,11 @@ public class VisitorListService {
 		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
 		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
-		System.out.println(resultSearchList);
+		return resultSearchList;
 
-		searchM.setResultSearchList(resultSearchList);
+//		System.out.println(resultSearchList);
+//
+//		searchM.setResultSearchList(resultSearchList);
 
 	}
 
@@ -127,6 +132,7 @@ public class VisitorListService {
 		mongoOps.updateFirst(query, update, OfficeVisit.class);
 
 	}
+
 
 	public String deleteVisitorList(SpringDataMongoDBConfig mongoConfig, RetentionConfig rConfig) {
 
@@ -163,8 +169,9 @@ public class VisitorListService {
 //			mongoOps.remove(query, OfficeVisit.class);
 
 			//ログ書き込み
-			try {
-				BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+			try
+				(BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));){
+
 				if (checkFileState(file)) {
 
 					bw.write(LocalDateTime.now().format(
@@ -182,15 +189,19 @@ public class VisitorListService {
 					bw.close();
 				} else {
 					//ログファイルに書き込みできない場合
-					return "error";
+					return "Can't write logfile";
 				}
+
+			} catch (FileNotFoundException e) {
+
+				return "FileNotFoundException ";
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				return "error";
+				return "IOException";
 			}
 		}
-		return "success";
+		return "success (消去対象件数: " + resultSearchList.size() + "件)";
 	}
 
 	private boolean checkFileState(File f) {

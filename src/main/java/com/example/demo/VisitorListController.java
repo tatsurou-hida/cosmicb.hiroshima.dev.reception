@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.example.demo.config.RetentionConfig;
@@ -27,7 +26,7 @@ import com.example.demo.config.SpringDataMongoDBConfig;
 @Controller
 @EnableAutoConfiguration
 @ComponentScan
-@SessionAttributes(value = "searchM")
+@SessionAttributes("s")
 public class VisitorListController {
 
 	@Autowired
@@ -39,16 +38,34 @@ public class VisitorListController {
 
 	protected final static Logger logger = LoggerFactory.getLogger(VisitorListController.class);
 
-	@ModelAttribute("searchM")
-	SearchModel searchForm() {
-		logger.trace("create searchForm");
-        //System.out.println("create inputForm");
-        return new SearchModel ();
+	@ModelAttribute("s")
+	public SearchModel getNewInstance() {
+
+		logger.info("=================================");
+		logger.info("Create new instance for a session");
+
+		//初期化
+
+		SearchModel init = new SearchModel();
+		//		init.setInputMaxDate(LocalDate.now().toString());
+		//		init.setInputMinDate(LocalDate.now().minusDays(7).toString());
+		//		init.setChecked(true);
+		visitorListService.startPageInitialize(init);
+
+		logger.info(init.toString());
+
+		return init;
+
 	}
 
+	//	SearchModel searchForm() {
+	//		logger.trace("create searchForm");
+	//        //System.out.println("create inputForm");
+	//        return new SearchModel ();
+	//	}
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public String index(SearchModel searchM, Model model) {
+	public String index(@ModelAttribute("s") SearchModel s, Model model) {
 
 		//SearchModel searchM = new SearchModel();
 		//SearchModel searchM = searchForm;
@@ -56,110 +73,138 @@ public class VisitorListController {
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
 		System.out.println("★★★★★ Controller called.");
-		visitorListService.startPageInitialize(searchM);
+		//visitorListService.startPageInitialize(searchM);
 
-		//保存期間の設定を読み込む
+		//保存期間の設定を読み込む　コントローラから設定へ！
 		visitorListService.setDeletePeriod(rConfig, delM);
 
 		//検索
-		visitorListService.search(searchM, mongoConfig);
+		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
 
 		// 検索結果entityをmodelに設定
-		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(searchM, modelList);
+		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+		modelList = makeList(list);
 
 		model.addAttribute("delM", delM);
-		model.addAttribute("searchM", searchM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
+
+		logger.info(model.getAttribute("s").toString());
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
 	}
 
-
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public String search(@ModelAttribute SearchModel searchM, Model model) {
+	public String search(@ModelAttribute("s") SearchModel s, Model model) {
 
 		DeleteModel delM = new DeleteModel();
 
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
-		//保存期間の設定を読み込む
+		//保存期間の設定を読み込む　コントローラから設定へ！
 		visitorListService.setDeletePeriod(rConfig, delM);
 
 		//検索
-		visitorListService.search(searchM, mongoConfig);
+		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
 
 		// 検索結果entityをmodelに設定
-		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(searchM, modelList);
+		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+		modelList = makeList(list);
 
-		//form内の部品に値を入れる(入力内容の保持)
-		model.addAttribute("delM",delM);
-		model.addAttribute("searchM", searchM);
+		model.addAttribute("delM", delM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 
-		//Thymeleafを表示する
+		logger.info(model.getAttribute("s").toString());
+
+		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
 
 	}
 
-
 	@RequestMapping(value = "/exit/{id}", method = RequestMethod.POST)
 	private String exit(@PathVariable("id") String _id,
-						@ModelAttribute VisitorListExitSendModel sendModel,
-						@SessionAttribute SearchModel searchM,
-						Model model) {
+			@ModelAttribute("sendModel") VisitorListExitSendModel sendModel,
+			@ModelAttribute("s") SearchModel s,
+			Model model) {
 
 		//SearchModel searchM = new SearchModel();
-		//SearchModel searchM = searchForm;
+		//SearchModel searchM = model.getAttribute("s");
 		DeleteModel delM = new DeleteModel();
-
 
 		//退室処理のパラメータをサービスに渡す
 		visitorListService.updateVisitorLeft(_id, sendModel.getPerson_to_visit(), mongoConfig);
 
-
-		//保存期間の設定を読み込む
+		//保存期間の設定を読み込む　コントローラから設定へ！
 		visitorListService.setDeletePeriod(rConfig, delM);
 
 		//検索
-		visitorListService.search(searchM, mongoConfig);
+		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
 
 		// 検索結果entityをmodelに設定
-		List<RowDataModel>modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(searchM, modelList);
+		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+		modelList = makeList(list);
 
-		//form内の部品に値を入れる(入力内容の保持)
-		model.addAttribute("delM",delM);
-		model.addAttribute("searchM", searchM);
+		model.addAttribute("delM", delM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 
-		//Thymeleafを表示する;
+		logger.info(model.getAttribute("s").toString());
+
+		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
 	}
 
-	@RequestMapping(value= "/delete", method = RequestMethod.POST)
-	private String delete(Model model ) {
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	private String delete(@ModelAttribute("s") SearchModel s, Model model) {
+
+		DeleteModel delM = new DeleteModel();
+		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
 		//削除処理
-		visitorListService.deleteVisitorList(mongoConfig, rConfig);
+		String result = visitorListService.deleteVisitorList(mongoConfig, rConfig);
+		if (result.equals("FileNotFoundException")) {
+			result = "Error: " + result + "\n"
+					+ "設定ファイル指定のパスにディレクトリが存在しません。" + "\n"
+					+ "設定値: " + rConfig.getPersontovisit().getLogfilepath();
+		} else if (result.equals("IOException")) {
+			result = "Error: " + result + "\n"
+					+ "ファイルやネットワークなど入出力に関係する問題を検出しました。";
+		} else if (result.equals("Can't write logfile")) {
+			result = "Error: " + result + "\n"
+					+ "ログファイルにデータを書き込むことができませんでした。" + "\n"
+					+ "消去対象データはデータベースから消去されている場合があります。";
+		}
+
+		//保存期間の設定を読み込む　コントローラから設定へ！
+		visitorListService.setDeletePeriod(rConfig, delM);
+
+		//検索
+		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
+
+		// 検索結果entityをmodelに設定
+		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+		modelList = makeList(list);
+
+		model.addAttribute("delM", delM);
+		model.addAttribute("sendModel", sendModel);
+		model.addAttribute("list", modelList);
+		model.addAttribute("del_result", result);
 
 		//Thymeleafを表示する;
 		return "VisitorList";
 	}
 
+	private List<RowDataModel> makeList(List<OfficeVisit> list) {
 
-	private List<RowDataModel> makeList(SearchModel searchM, List<RowDataModel>list) {
+		List<RowDataModel> rowDataList = new ArrayList<RowDataModel>();
 
-		for (OfficeVisit e : searchM.getResultSearchList()) {
+		for (OfficeVisit e : list) {
 			RowDataModel m = new RowDataModel();
 
-			String s1 = e.getVisited_at().format(DateTimeFormatter.ISO_LOCAL_DATE);
-			String s2= LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+			//String s1 = e.getVisited_at().format(DateTimeFormatter.ISO_LOCAL_DATE);
+			//String s2= LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 
 			//入室時間の書式変更⇒文字列化
 			if (e.getVisited_at().format(DateTimeFormatter.ISO_LOCAL_DATE)
@@ -172,7 +217,7 @@ public class VisitorListController {
 				m.setVisited_at(e.getVisited_at().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
 			}
 
-			String s3 = e.getLeft_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			//String s3 = e.getLeft_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 			//退室時間の書式変更⇒文字列化
 			if (e.getLeft_at().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
@@ -212,18 +257,15 @@ public class VisitorListController {
 				//退室時間との差をとる
 				minutes = ChronoUnit.MINUTES.between(e.getVisited_at(), e.getLeft_at());
 			}
-			hrs = (int)minutes / 60;
+			hrs = (int) minutes / 60;
 			minutes = Math.abs(minutes % 60);
 			//ケタ埋めしてセットする
 			m.setDiffTime(String.format("%02d", hrs) + ":" + String.format("%02d", minutes));
 
-			list.add(m);
+			rowDataList.add(m);
 		}
 
-
-		return list;
+		return rowDataList;
 	}
-
-
 
 }
