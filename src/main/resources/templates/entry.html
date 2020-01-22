@@ -1,40 +1,208 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-<title>訪 問 者 受 付 画 面</title>
+<link rel="stylesheet" media="all"
+	th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
+<title>訪問者受付画面</title>
 </head>
-<body>
-	<h1>ようこそコスミックビジネスへ</h1>
+<body class="overflow-hidden">
+	<div class="container-fluid p-0">
 
-	<form action="registration" method="post">
+		<div id="carousel-main"
+			class="carousel slide row vh-100 align-items-center"
+			data-ride="carousel" data-wrap="false" data-interval="false">
 
-		所属／会社：
-		<input type="text" name="inputCompany" autofocus/><br>
-		お名前　　：
-		<input type="text" name="inputName"/><br>
-		人数　　　：
-		<input type="number" name="inputNum" max="10" min="1" value="1"/><br>
-		<input type="submit" value ="受付"/>
-		<br>
+			<div class="carousel-inner col" style="min-height: 50%;">
 
-		<div th:if="${entry} != null">
-			<br><br>
-			<span>入力情報</span>
-			<div>
-				<label for="company1">会社名：</label>
-				<span th:text="${entry.inputCompany}"></span><br>
-				<label for="name1">お名前：</label>
-				<span th:text="${entry.inputName}"></span><br>
-				<label for="num1">人　数：</label>
-				<span th:text="${entry.inputNum}"></span><br>
+				<div id="off" class="carousel-item bg-dark" data-slideid="0">
+					<div class="d-block vw-100 vh-100 text-center text-secondary">
+						<p>クリックしてください</p>
+					</div>
+				</div>
+
+				<div class="carousel-item active" data-slideid="1">
+					<div class="d-block w-100">
+						<div class="p-3 text-center">
+							<img data-src="holder.js/350x250?text=logo">
+						</div>
+						<div class="p-3 text-center">
+							<button id="btn-init-accept" class="btn btn-lg btn-primary">受付する</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="carousel-item" data-slideid="2">
+					<div class="d-block w-100 p-3">
+
+						<form action="registration" method="post">
+							<div class="form-group row">
+								<label for="inputName" class="col-sm-2 col-form-label">お名前
+									：</label>
+								<div class="col-sm-6">
+									<input type="text" name="inputName" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group row">
+								<label for="inputCompany" class="col-sm-2 col-form-label">所属／会社：</label>
+								<div class="col-sm-6">
+									<input type="text" name="inputCompany" class="form-control" />
+								</div>
+							</div>
+							<div class="form-group row">
+								<label for="inputNum" class="col-sm-2 col-form-label">人数
+									：</label>
+								<div class="col-sm-6">
+									<input type="number" name="inputNum" max="10" min="1" value="1"
+										class="form-control" />
+								</div>
+							</div>
+
+							<input type="button" id="btn-submit"
+								class="btn btn-lg btn-primary" value="受付する" />
+						</form>
+					</div>
+				</div>
+				<div class="carousel-item" data-slideid="3">
+					<div class="d-block w-100 text-center text-secondary">
+						<p>担当者がまいります。少々お待ちください。</p>
+					</div>
+				</div>
 			</div>
-
 		</div>
+	</div>
+
+	<script type="text/javascript"
+		th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script type="text/javascript"
+		th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
+	<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.6/holder.min.js"></script>
+	<script type="text/javascript">
+
+		$(function() {
+
+			var Slide = {
+					LIGHT_OFF: 0,
+					INITIAL: 1,
+					FORM: 2,
+					COMPLETE: 3
+			};
+
+			/* --- timer --- */
+
+			var lightOffTimer = {
+					name: 'lightOffTimer',
+					timerId: 0,
+					time: 60, // seconds
+					onAtSlide: Slide.INITIAL,
+					toSlide: Slide.LIGHT_OFF
+				};
+
+			var leaveFormTimer = {
+					name: 'leaveFormTimer',
+					timerId: 0,
+					time: 60, // seconds
+					onAtSlide: Slide.FORM,
+					toSlide: Slide.INITIAL
+				};
+
+			var backToInitSlideTimer = {
+					name: 'backToInitSlideTimer',
+					timerId: 0,
+					time: 10, // seconds
+					onAtSlide: Slide.COMPLETE,
+					toSlide: Slide.INITIAL
+				};
+
+			var timers = [lightOffTimer, leaveFormTimer, backToInitSlideTimer];
+
+			function setSlide(index) {
+
+				$('#carousel-main').carousel(index);
+
+				for (let k in timers) {
+					if (index == timers[k].onAtSlide) {
+						clearTimeout(timers[k].timerId);
+						let id = setTimeout(function(){
+							setSlide(timers[k].toSlide);
+						}, timers[k].time * 1000);
+						timers[k].timerId = id;
+					} else {
+						clearTimeout(timers[k].timerId);
+						timers[k].timerId = 0;
+					}
+				}
+			}
+
+			function getCurrentSlideIndex() {
+
+				var currentIndex = Number($('#carousel-main .carousel-item.active').data('slideid'));
+
+				return Number(currentIndex);
+			}
+
+			function resetTimer(timer) {
+
+				clearTimeout(timer.timerId);
+
+				timer.timerId = setTimeout(function(){
+					setSlide(timer.toSlide);
+				}, timer.time * 1000);
 
 
+			}
 
-	</form>
+			// reset timers on user operation
+			$('body').on('keydown mousemove', function() {
+				var currentSlideIndex = getCurrentSlideIndex();
+				switch(currentSlideIndex) {
+				case Slide.INITIAL:
+					resetTimer(lightOffTimer);
+					break;
+				case Slide.FORM:
+					resetTimer(leaveFormTimer);
+					break;
+				}
+			});
 
+			/* --- interval --- */
+			const intervalSec = 3;
+
+			setInterval(function() {
+				$.getJSON("/api/enter/elapsed", null, function(data,
+						textStatus, jqXHR) {
+
+					if (data <= intervalSec) {
+						var currentSlideIndex = getCurrentSlideIndex();
+						switch(currentSlideIndex) {
+						case Slide.LIGHT_OFF:
+							setSlide(Slide.INITIAL);
+							break;
+						case Slide.INITIAL:
+							resetTimer(lightOffTimer);
+							break;
+						}
+					}
+				});
+			}, intervalSec * 1000);
+
+			/* --- operation --- */
+			$('#off').on('click', function() {
+				setSlide(Slide.INITIAL);
+			});
+
+			$('#btn-init-accept').on('click', function() {
+				setSlide(Slide.FORM);
+			});
+
+			$('#btn-submit').on('click', function() {
+				setSlide(Slide.COMPLETE);
+			});
+
+			setSlide(Slide.INITIAL);
+
+		});
+	</script>
 </body>
 </html>

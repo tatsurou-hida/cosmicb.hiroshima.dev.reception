@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.service.EnteringDetectionService;
@@ -32,8 +33,10 @@ public class EnteringDetectionController {
 	 * @return 前回入室検知からの経過時間（秒）
 	 */
 	@RequestMapping(value = "/api/enter/elapsed", method = RequestMethod.GET)
+	@ResponseBody
 	public long getElapsedTimeFromLastEntered() {
 		logger.trace("request received");
+
 		return service.getElapsedTimeFromLastEntered();
 	}
 
