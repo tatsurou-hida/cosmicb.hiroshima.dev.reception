@@ -15,8 +15,7 @@ url("/css/visitorlist.css")
 	<fieldset>
 		<legend>日付フィルター</legend>
 
-		<form action="#" th:action="@{/search}" method="post"
-			th:object="${s}">
+		<form action="#" th:action="@{/search}" method="post" th:object="${s}">
 			<p>
 				入室日：
 				<input type="date" min="2020-01-01" th:field="*{inputMinDate}" />
