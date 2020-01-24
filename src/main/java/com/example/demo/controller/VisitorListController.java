@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import com.example.demo.OfficeVisit;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
-import com.example.demo.form.DeleteModel;
+import com.example.demo.form.EraseModel;
 import com.example.demo.form.RowDataModel;
 import com.example.demo.form.SearchModel;
 import com.example.demo.form.VisitorListExitSendModel;
@@ -47,30 +47,35 @@ public class VisitorListController {
 	@ModelAttribute("s")
 	public SearchModel getNewInstance() {
 
-		logger.info("=================================");
-		logger.info("Create new instance for a session");
+		logger.trace("=================================");
+		logger.trace("Create new instance for a session");
 
 		//初期化
 
 		SearchModel init = new SearchModel();
-		visitorListService.startPageInitialize(init);
+		init = visitorListService.startPageInitialize(init);
 
-		logger.info(init.toString());
+		logger.debug(init.toString());
 
 		return init;
 
 	}
 
+	/**
+	 * @param s
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String index(@ModelAttribute("s") SearchModel s, Model model) {
 
-		DeleteModel delM = new DeleteModel();
+		EraseModel eraseM = new EraseModel();
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
-		System.out.println("★★★★★ Controller called.");
+		logger.trace("★★★★★ Controller called.");
 
 		//保存期間の設定を読み込んでDeleteModelにセットする
-		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
+		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -79,11 +84,11 @@ public class VisitorListController {
 		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(list);
 
-		model.addAttribute("delM", delM);
+		model.addAttribute("eraseM", eraseM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 
-		logger.info(model.getAttribute("s").toString());
+		logger.debug(model.getAttribute("s").toString());
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
@@ -92,12 +97,12 @@ public class VisitorListController {
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public String search(@ModelAttribute("s") SearchModel s, Model model) {
 
-		DeleteModel delM = new DeleteModel();
+		EraseModel eraseM = new EraseModel();
 
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
 		//保存期間の設定を読み込んでDeleteModelにセットする
-		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
+		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -106,11 +111,11 @@ public class VisitorListController {
 		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(list);
 
-		model.addAttribute("delM", delM);
+		model.addAttribute("eraseM", eraseM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 
-		logger.info(model.getAttribute("s").toString());
+		logger.debug(model.getAttribute("s").toString());
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
@@ -118,20 +123,20 @@ public class VisitorListController {
 	}
 
 	@RequestMapping(value = "/exit/{id}", method = RequestMethod.POST)
-	private String exit(@PathVariable("id") String _id,
+	public String exit(@PathVariable("id") String _id,
 			@ModelAttribute("sendModel") VisitorListExitSendModel sendModel,
 			@ModelAttribute("s") SearchModel s,
 			Model model) {
 
 		//FIX:_Idをhiddenができないためaction名をURLに付加して取得している
 
-		DeleteModel delM = new DeleteModel();
+		EraseModel eraseM = new EraseModel();
 
 		//退室処理のパラメータをサービスに渡す
 		visitorListService.updateVisitorList(_id, sendModel.getPerson_to_visit(), mongoConfig);
 
 		//保存期間の設定を読み込んでDeleteModelにセットする
-		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
+		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -140,25 +145,25 @@ public class VisitorListController {
 		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(list);
 
-		model.addAttribute("delM", delM);
+		model.addAttribute("eraseM", eraseM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 
-		logger.info(model.getAttribute("s").toString());
+		logger.debug(model.getAttribute("s").toString());
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
 		//return "redirect:/list";
 	}
 
-	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	private String delete(@ModelAttribute("s") SearchModel s, Model model) {
+	@RequestMapping(value = "/erase", method = RequestMethod.POST)
+	public String delete(@ModelAttribute("s") SearchModel s, Model model) {
 
-		DeleteModel delM = new DeleteModel();
+		EraseModel eraseM = new EraseModel();
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
 		//削除処理
-		String msg = visitorListService.deleteVisitorList(mongoConfig, rConfig);
+		String msg = visitorListService.eraseVisitorList(mongoConfig, rConfig);
 		if (msg.equals("FileNotFoundException")) {
 			msg = "Error: " + msg + "\n"
 					+ "設定ファイル指定のパスにディレクトリが存在しません。" + "\n"
@@ -173,7 +178,7 @@ public class VisitorListController {
 		}
 
 		//保存期間の設定を読み込んでDeleteModelにセットする
-		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
+		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
 		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
@@ -182,7 +187,7 @@ public class VisitorListController {
 		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
 		modelList = makeList(list);
 
-		model.addAttribute("delM", delM);
+		model.addAttribute("eraseM", eraseM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
 		model.addAttribute("msg", msg);
@@ -191,8 +196,12 @@ public class VisitorListController {
 		return "VisitorList";
 	}
 
+	/**検索結果をVIEW用に書式変更を行うメソッド
+	 * OfficeVisit型⇒RowDataModelへの変換
+	 * @param list
+	 * @return <RowDataModel>型のList
+	 */
 	private List<RowDataModel> makeList(List<OfficeVisit> list) {
-
 		List<RowDataModel> rowDataList = new ArrayList<RowDataModel>();
 
 		for (OfficeVisit e : list) {
@@ -259,5 +268,4 @@ public class VisitorListController {
 
 		return rowDataList;
 	}
-
 }

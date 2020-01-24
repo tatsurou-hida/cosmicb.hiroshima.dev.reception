@@ -1,6 +1,6 @@
 package com.example.demo.form;
 
-public class DeleteModel {
+public class EraseModel {
 
 	private int period;
 
