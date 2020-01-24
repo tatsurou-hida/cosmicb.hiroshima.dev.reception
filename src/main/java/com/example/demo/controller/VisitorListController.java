@@ -123,12 +123,12 @@ public class VisitorListController {
 			@ModelAttribute("s") SearchModel s,
 			Model model) {
 
-		//TODO:_Idをhiddenができないためaction名付加して取得している
+		//FIX:_Idをhiddenができないためaction名をURLに付加して取得している
 
 		DeleteModel delM = new DeleteModel();
 
 		//退室処理のパラメータをサービスに渡す
-		visitorListService.updateVisitorLeft(_id, sendModel.getPerson_to_visit(), mongoConfig);
+		visitorListService.updateVisitorList(_id, sendModel.getPerson_to_visit(), mongoConfig);
 
 		//保存期間の設定を読み込んでDeleteModelにセットする
 		delM.setPeriod(rConfig.getPersontovisit().getPeriod());
@@ -148,6 +148,7 @@ public class VisitorListController {
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
+		//return "redirect:/list";
 	}
 
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)

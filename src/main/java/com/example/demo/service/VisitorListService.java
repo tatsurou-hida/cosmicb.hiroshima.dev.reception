@@ -98,7 +98,7 @@ public class VisitorListService {
 	}
 
 
-	public void updateVisitorLeft(String id, String personToVisit, SpringDataMongoDBConfig mongoConfig) {
+	public void updateVisitorList(String id, String personToVisit, SpringDataMongoDBConfig mongoConfig) {
 
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(id));
