@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import com.example.demo.repository.VisitorListRepository;
+
 @Repository
 public class VisitorListRepositoryImpl implements VisitorListRepository {
 

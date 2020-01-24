@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.form;
 
 public class RowDataModel {
 
@@ -9,7 +9,15 @@ public class RowDataModel {
 	private String left_at;
 	private String person_to_visit;
 	private String diffTime;
+	private long diffMinutes;
 
+
+	public long getDiffMinutes() {
+		return diffMinutes;
+	}
+	public void setDiffMinutes(long diffMinutes) {
+		this.diffMinutes = diffMinutes;
+	}
 	public String get_id() {
 		return _id;
 	}
