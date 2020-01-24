@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import static org.springframework.data.mongodb.core.query.Criteria.*;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +26,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.OfficeVisit;
-import com.example.demo.Person;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
 import com.example.demo.form.SearchModel;
@@ -53,19 +50,6 @@ public class VisitorListService {
 		searchM.setChecked(true);
 	}
 
-	//TODO:テスト用後で消す
-	public void databaseTest()  {
-
-
-		System.out.println("★★★★★ ServiceMain called.");
-		String uri = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
-
-	    MongoOperations mongoOps = new MongoTemplate(MongoClients.create(uri), "test");
-	    mongoOps.insert(new Person("Joe", 34));
-
-	    System.out.println(mongoOps.findOne(new Query(where("name").is("Joe")), Person.class));
-
-	  }
 
 	public List<OfficeVisit> search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig) {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
@@ -106,7 +90,7 @@ public class VisitorListService {
 		}
 
 		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
 		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		return resultSearchList;
@@ -124,7 +108,7 @@ public class VisitorListService {
 		update.set("person_to_visit", personToVisit);
 
 		//DB接続
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
 		//DB更新
 		mongoOps.updateFirst(query, update, OfficeVisit.class);
 
@@ -152,7 +136,7 @@ public class VisitorListService {
 				));
 		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
 
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
 		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		//取得したログに対してそれぞれ消去していく
@@ -162,7 +146,7 @@ public class VisitorListService {
 			query.addCriteria(Criteria
 					.where("_id").is(resultSearchList.get(i).get_id())
 					);
-			mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), "database");
+			mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
 			mongoOps.remove(query, OfficeVisit.class);
 
 			//ログ書き込み

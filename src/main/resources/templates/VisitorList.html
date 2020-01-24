@@ -3,49 +3,57 @@
 <head>
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet"
+	href="webjars/bootstrap/4.4.1/css/bootstrap.min.css" />
+
 
 <title>管 理 画 面</title>
-<style>
-@import
-url("/css/visitorlist.css")
-</style>
 
 <script src="/script/visitorlist.js"></script>
 </head>
 <body>
 	<div class="container">
-		<div class="search-form">
-			<div class="panel panel-default">
-				<div class="panel-heading">検索設定</div>
-				<div class="panel-body">
-					<form action="#" th:action="@{/search}" method="post" th:object="${s}">
-						<p>
-							入室日：
-							<input type="date" min="2020-01-01" th:field="*{inputMinDate}" />
-							～
-							<input type="date" min="2020-01-01" th:field="*{inputMaxDate}" />
-						</p>
-						<div class="row">
-							<div class="col">
-								<label th:for="checked1"> 未退室のみ </label>
-								<input type="checkbox" th:field="*{checked}" />
-									<div class="text-right">
-										<button type="submit" class="btn btn-info btn-lg">検 索</button>
-									</div>
-							</div>
+
+		<div class="row">
+			<div class="col-md-9">
+				<div class="search-form">
+
+					<div class="card bg-light mb-3">
+						<div class="card-header">検索設定</div>
+						<div class="card-body">
+							<form action="#" th:action="@{/search}" method="post"
+								th:object="${s}">
+								<span>入室日： <input type="date" min="2020-01-01"
+									th:field="*{inputMinDate}" /> ～ <input type="date"
+									min="2020-01-01" th:field="*{inputMaxDate}" />
+								</span>
+								<div class="text-right">
+									<button type="submit" class="btn btn-info btn-md">検 索</button>
+								</div>
+								<label th:for="checked1"> 未退室のみ </label> <input type="checkbox"
+									th:field="*{checked}" />
+							</form>
 						</div>
-					</form>
+					</div>
 				</div>
-
 			</div>
-
+			<div class="col-md-3">
+				<div class="msg-form">
+					<div class="card bg-light mb-3">
+						<div class="card-header">消去時メッセージ</div>
+						<div class="card-body">
+							<span th:text="${msg}"></span>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div style="height: 510px; overflow-y: scroll;">
-			<table class="table table-striped">
-				<thead>
+
+
+		<div style="height: 450px; overflow-y: scroll;">
+			<table class="table table-striped table-bordered table-sm">
+				<thead class="thead-dark">
 					<tr>
 						<th>入室日時</th>
 						<th>所属／会社名</th>
@@ -57,29 +65,31 @@ url("/css/visitorlist.css")
 				</thead>
 				<tbody>
 					<tr th:each="row : ${list}">
-						<td th:text="${row.visited_at}" />
-						<td th:text="${row.visitor_org}" />
-						<td th:text="${row.visitor_name}" />
-						<td th:text="${row.diffTime}" />
-						<td>
-							<form action="#" th:action="@{/exit/{id}(id=${row._id})}" method="post" th:object="${sendModel}">
+						<td class="align-middle mx-auto" th:text="${row.visited_at}" />
+						<td class="align-middle" th:text="${row.visitor_org}" />
+						<td class="align-middle" th:text="${row.visitor_name}" />
+						<td class="align-middle" th:text="${row.diffTime}"
+							th:classappend="${row.diffMinutes > 300} ? bg-danger :'' "></td>
+						<td class="align-middle">
+							<form action="#" th:action="@{/exit/{id}(id=${row._id})}"
+								method="post" th:object="${sendModel}">
 								<div th:if="${row.person_to_visit ==''}">
 									<div class="row">
 										<div class="col-md-7">
-											<input type="text" class="form-control" name="person_to_visit" value="" placeholder="名前を入力" required>
+											<input type="text" class="form-control"
+												name="person_to_visit" value="" placeholder="名前を入力" required>
 										</div>
 										<div class="col-md-5">
-											<button type="submit" class="btn btn-success">退室処理 </button>
+											<button type="submit" class="btn btn-success">退室処理</button>
 										</div>
 									</div>
-<!-- 									<input type="text" name="person_to_visit" value="" /> -->
 								</div>
 								<div th:unless="${row.person_to_visit ==''}">
 									<span th:text="${row.person_to_visit}" /></span>
 								</div>
 							</form>
 						</td>
-						<td>
+						<td class="align-middle">
 							<div th:unless="${row.person_to_visit ==''}">
 								<span th:text="${row.left_at}"></span>
 							</div>
@@ -88,84 +98,30 @@ url("/css/visitorlist.css")
 				</tbody>
 			</table>
 		</div>
-
 	</div>
 
-	<fieldset>
-		<legend></legend>
-	</fieldset>
-	<footer class="fixed-bottom">
-		<button type="submit" class="btn btn-danger">データ削除</button>
-		<span 	th:text="'　' + ${delM.period} + 'カ月以上経過した退室済みデータをデータベースから削除します'"></span>
-	</footer>
-
-
-<!-- 	<h1>管理画面</h1>
-	<fieldset>
-		<legend>日付フィルター</legend>
-
-		<form action="#" th:action="@{/search}" method="post" th:object="${s}">
-			<p>
-				入室日： <input type="date" min="2020-01-01" th:field="*{inputMinDate}" />
-				～ <input type="date" min="2020-01-01" th:field="*{inputMaxDate}" />
-			</p>
-
-			<label th:for="checked1">未退室のみ</label> <input type="checkbox"
-				th:field="*{checked}" /> <input type="submit" value="検索" />
-		</form>
-	</fieldset> -->
-
-<!-- 	<div style="height: 350px; overf; ow-y: scroll;">
-		<table>
-			<thead>
-				<tr>
-					<th width="200">入室日時</th>
-					<th width="300">所属/会社名</th>
-					<th width="200">訪問者名</th>
-					<th width="150">経過時間</th>
-					<th width="300">訪 問 先</th>
-					<th width="200">退室時間</th>
-				</tr>
-			</thead>
-
-			<tbody>
-				<tr th:each="row : ${list}">
-
-					<td th:text="${row.visited_at}" />
-					<td th:text="${row.visitor_org}" />
-					<td th:text="${row.visitor_name}" />
-					<td th:text="${row.diffTime}" />
-					<td>
-						<form action="#" th:action="@{/exit/{id}(id=${row._id})}"
-							method="post" th:object="${sendModel}">
-							<div th:if="${row.person_to_visit ==''}">
-								<input type="text" name="person_to_visit" value="" /> <input
-									type="submit" value="退室処理" />
-							</div>
-							<div th:unless="${row.person_to_visit ==''}">
-								<span th:text="${row.person_to_visit}" /></span>
-							</div>
-						</form>
-					</td>
-					<td>
-						<div th:unless="${row.person_to_visit ==''}">
-							<span th:text="${row.left_at}"></span>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-
-		</table>
-
+	<!-- 	<div th:if="${del_result} != null">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<strong>通知</strong>
+			<span th:text="${del_result}"></span>
+			<button type="button" class="close" data-dismiss="alert" aria-label="閉じる">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
 	</div> -->
 
-<!-- 	<fieldset>
-		<legend>データの消去</legend>
+	<div class="fixed-bottom alert-secondary border pl-3">
 		<form action="#" th:action="@{/delete}" method="post">
-			<input type="submit" value="データ削除" /> <span
+			<button type="submit" class="btn btn-danger" data-toggle="modal"
+				data-target="#modal1">データ削除</button>
+			<span
 				th:text="'　' + ${delM.period} + 'カ月以上経過した退室済みデータをデータベースから削除します'"></span>
 		</form>
-	</fieldset> -->
+	</div>
+
+	<script src="webjars/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+	th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 
 </body>
 </html>

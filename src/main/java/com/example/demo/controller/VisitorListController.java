@@ -123,6 +123,8 @@ public class VisitorListController {
 			@ModelAttribute("s") SearchModel s,
 			Model model) {
 
+		//TODO:_Idをhiddenができないためaction名付加して取得している
+
 		DeleteModel delM = new DeleteModel();
 
 		//退室処理のパラメータをサービスに渡す
@@ -155,16 +157,16 @@ public class VisitorListController {
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
 		//削除処理
-		String result = visitorListService.deleteVisitorList(mongoConfig, rConfig);
-		if (result.equals("FileNotFoundException")) {
-			result = "Error: " + result + "\n"
+		String msg = visitorListService.deleteVisitorList(mongoConfig, rConfig);
+		if (msg.equals("FileNotFoundException")) {
+			msg = "Error: " + msg + "\n"
 					+ "設定ファイル指定のパスにディレクトリが存在しません。" + "\n"
 					+ "設定値: " + rConfig.getPersontovisit().getLogfilepath();
-		} else if (result.equals("IOException")) {
-			result = "Error: " + result + "\n"
+		} else if (msg.equals("IOException")) {
+			msg = "Error: " + msg + "\n"
 					+ "ファイルやネットワークなど入出力に関係する問題を検出しました。";
-		} else if (result.equals("Can't write logfile")) {
-			result = "Error: " + result + "\n"
+		} else if (msg.equals("Can't write logfile")) {
+			msg = "Error: " + msg + "\n"
 					+ "ログファイルにデータを書き込むことができませんでした。" + "\n"
 					+ "消去対象データはデータベースから消去されている場合があります。";
 		}
@@ -182,7 +184,7 @@ public class VisitorListController {
 		model.addAttribute("delM", delM);
 		model.addAttribute("sendModel", sendModel);
 		model.addAttribute("list", modelList);
-		model.addAttribute("del_result", result);
+		model.addAttribute("msg", msg);
 
 		//Thymeleafを表示する;
 		return "VisitorList";
@@ -244,6 +246,8 @@ public class VisitorListController {
 				//退室時間との差をとる
 				minutes = ChronoUnit.MINUTES.between(e.getVisited_at(), e.getLeft_at());
 			}
+			m.setDiffMinutes(minutes);
+
 			hrs = (int) minutes / 60;
 			minutes = Math.abs(minutes % 60);
 			//ケタ埋めしてセットする
