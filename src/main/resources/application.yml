@@ -15,14 +15,14 @@ spring:
 # MONGODB (MongoProperties)
   data:
     mongodb:
-      host: cluster0-cf1b0.gcp.mongodb.net
-      port: 27017
-      uri: mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority
+      host: xxx ### change
+      port: 0 ### change
+      uri: xxx ### change
       database: database
 #      authentication-database: mongovwdb
 #      grid-fs-database:
-      username: app
-      password: kAz54fgSlnACwxIi
+      username: xxx ### change
+      password: xxx ### change
 #      repositories:
 #        enabled: true  # if spring data repository support is enabled
 
