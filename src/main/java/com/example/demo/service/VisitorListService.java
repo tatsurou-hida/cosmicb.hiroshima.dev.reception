@@ -25,9 +25,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.OfficeVisit;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
+import com.example.demo.entity.OfficeVisit;
 import com.example.demo.form.SearchModel;
 import com.example.demo.repository.VisitorListRepository;
 import com.mongodb.client.MongoClients;

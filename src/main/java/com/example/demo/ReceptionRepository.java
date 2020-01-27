@@ -3,6 +3,8 @@ package com.example.demo;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import com.example.demo.entity.OfficeVisit;
+
 @Repository
 public interface ReceptionRepository extends MongoRepository<OfficeVisit, String> {
 //	public List<OfficeVisit> findByvisitor_name(String visitor_name);
