@@ -17,9 +17,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -30,7 +27,6 @@ import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
 import com.example.demo.form.SearchModel;
 import com.example.demo.repository.VisitorListRepository;
-import com.mongodb.client.MongoClients;
 
 @Service
 public class VisitorListService {
@@ -82,28 +78,34 @@ public class VisitorListService {
 		//クエリ上の都合でinputMaxDateTimeに＋1日する
 		inputMaxDateTime = inputMaxDateTime.plusDays(1);
 
-		Query query = new Query();
+		//Query query = new Query();
 
 		if (checked) {
 			//入室者検索
 
-			query.addCriteria(Criteria.where("person_to_visit").is("")
-					.andOperator(
-							Criteria.where("visited_at").gte(inputMinDateTime),
-							Criteria.where("visited_at").lt(inputMaxDateTime)));
+			resultSearchList = visitorListRepository.findByVisitedAtBetweenAndPersonToVisitIsOrderByVisitedAtDesc(
+					inputMinDateTime, inputMaxDateTime, "");
+
+			//			query.addCriteria(Criteria.where("person_to_visit").is("")
+			//					.andOperator(
+			//							Criteria.where("visited_at").gte(inputMinDateTime),
+			//							Criteria.where("visited_at").lt(inputMaxDateTime)));
 
 		} else {
 			//全件検索
-			query.addCriteria(new Criteria()
-					.andOperator(
-							Criteria.where("visited_at").gte(inputMinDateTime),
-							Criteria.where("visited_at").lt(inputMaxDateTime)));
+			resultSearchList = visitorListRepository.findByVisitedAtBetweenOrderByVisitedAtDesc(
+					inputMinDateTime,
+					inputMaxDateTime);
+			//			query.addCriteria(new Criteria()
+			//					.andOperator(
+			//							Criteria.where("visited_at").gte(inputMinDateTime),
+			//							Criteria.where("visited_at").lt(inputMaxDateTime)));
 		}
 
-		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-				mongoConfig.getDatabase());
-		resultSearchList = mongoOps.find(query.limit(2000), OfficeVisit.class);
+		//		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+		//		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
+		//				mongoConfig.getDatabase());
+		//		resultSearchList = mongoOps.find(query.limit(2000), OfficeVisit.class);
 
 		return resultSearchList;
 
@@ -116,6 +118,14 @@ public class VisitorListService {
 	 */
 	public void updateVisitorList(String _id, String personToVisit, SpringDataMongoDBConfig mongoConfig) {
 
+		OfficeVisit officeVisit = new OfficeVisit();
+		officeVisit.set_id(_id);
+		officeVisit.setPerson_to_visit(personToVisit);
+		officeVisit.setLeft_at(LocalDateTime.now());
+		officeVisit.setVisitor_name(officeVisit.getVisitor_name());
+
+		officeVisit = visitorListRepository.save(officeVisit);
+
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(_id));
 
@@ -124,10 +134,10 @@ public class VisitorListService {
 		update.set("person_to_visit", personToVisit);
 
 		//DB接続
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-				mongoConfig.getDatabase());
+		//MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
+		//mongoConfig.getDatabase());
 		//DB更新
-		mongoOps.updateFirst(query, update, OfficeVisit.class);
+		//mongoOps.updateFirst(query, update, OfficeVisit.class);
 
 	}
 
@@ -148,26 +158,30 @@ public class VisitorListService {
 		File file = new File(logFileName);
 
 		//消去対象ログを取得
-		Query query = new Query();
-		query.addCriteria(new Criteria()
-				.andOperator(
-						Criteria.where("visited_at").lt(startingDate),
-						Criteria.where("person_to_visit").ne("")));
-		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+		resultSearchList = visitorListRepository.findByVisitedAtLessThanAndPersonToVisitNot(startingDate, "");
 
-		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-				mongoConfig.getDatabase());
-		resultSearchList = mongoOps.find(query, OfficeVisit.class);
+		//		Query query = new Query();
+		//		query.addCriteria(new Criteria()
+		//				.andOperator(
+		//						Criteria.where("visited_at").lt(startingDate),
+		//						Criteria.where("person_to_visit").ne("")));
+		//		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+		//
+		//		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
+		//				mongoConfig.getDatabase());
+		//		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		if (resultSearchList.size() > 0) {
 			//取得したログに対してそれぞれ消去していく
 			for (int i = 0; i < resultSearchList.size(); i++) {
 
-				query = new Query();
-				query.addCriteria(Criteria
-						.where("_id").is(resultSearchList.get(i).get_id()));
-				mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
-				mongoOps.remove(query, OfficeVisit.class);
+				visitorListRepository.deleteById(resultSearchList.get(i).get_id());
+
+				//				query = new Query();
+				//				query.addCriteria(Criteria
+				//						.where("_id").is(resultSearchList.get(i).get_id()));
+				//				mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
+				//				mongoOps.remove(query, OfficeVisit.class);
 
 				//ログ書き込み
 				try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));) {
@@ -175,16 +189,16 @@ public class VisitorListService {
 					if (checkFileState(file)) {
 
 						bw.write(LocalDateTime.now().format(
-								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ",");
-						bw.write(resultSearchList.get(i).get_id() + ",");
+								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ","); //消去日時
+						bw.write(resultSearchList.get(i).get_id() + ","); //対象データ：ID
 						bw.write(resultSearchList.get(i).getVisited_at().format(
-								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ",");
-						bw.write(resultSearchList.get(i).getVisitor_org() + ",");
-						bw.write(resultSearchList.get(i).getVisitor_name() + ",");
-						bw.write(resultSearchList.get(i).getVisitor_count() + ",");
-						bw.write(resultSearchList.get(i).getPerson_to_visit() + ",");
+								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ","); //対象データ：訪問日時
+						bw.write(resultSearchList.get(i).getVisitor_org() + ","); //対象データ：会社名
+						bw.write(resultSearchList.get(i).getVisitor_name() + ","); //対象データ：名前
+						bw.write(resultSearchList.get(i).getVisitor_count() + ","); //対象データ：人数
+						bw.write(resultSearchList.get(i).getPerson_to_visit() + ","); //対象データ：訪問先
 						bw.write(resultSearchList.get(i).getLeft_at().format(
-								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))); //対象データ：退出日時
 						bw.newLine();
 						bw.close();
 					} else {
