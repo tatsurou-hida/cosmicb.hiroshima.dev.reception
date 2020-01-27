@@ -48,12 +48,18 @@ public class ReceptionService {
 		officeVisit.setPerson_to_visit("");
 		officeVisit.setLeft_at(epoch);
 
-		mongoOps.insert(officeVisit);
+		try{
+			mongoOps.insert(officeVisit);
 
-		System.out.println("===== レコード追加 =====");
-		System.out.println(name);
-		System.out.println(org);
-		System.out.println(number);
+			System.out.println("===== レコード追加 =====");
+			System.out.println(name);
+			System.out.println(org);
+			System.out.println(num);
+
+		}catch(Exception e){
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+
+		}
 	}
 
 	// ----------------------------------------------------------
@@ -61,8 +67,12 @@ public class ReceptionService {
 	// ----------------------------------------------------------
 	public void DbConnection() {
 		String uri = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
+		try{
+			mongoOps = new MongoTemplate(MongoClients.create(uri), "database");
 
-		mongoOps = new MongoTemplate(MongoClients.create(uri), "database");
+		}catch(Exception e){
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 
+		}
 	}
 }

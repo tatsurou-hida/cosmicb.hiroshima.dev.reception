@@ -26,38 +26,6 @@ public class OfficeVisit {
 	@Field("left_at")
 	private LocalDateTime left_at; //退室日時
 
-//	public OfficeVisit(
-//			String _id,
-//			String visitor_name,
-//			String visitor_org,
-//			int visitor_count,
-//			String person_to_visit,
-//			LocalDateTime visited_at,
-//			LocalDateTime left_at) {
-//
-//		this._id = _id;
-//		this.visitor_name = visitor_name;
-//		this.visitor_org = visitor_org;
-//		this.visitor_count = visitor_count;
-//		this.person_to_visit = person_to_visit;
-//		this.visited_at = visited_at;
-//		this.left_at = left_at;
-//
-//	}
-
-//	public OfficeVisit() {
-//	}
-
-//	public OfficeVisit(String name, String org, Integer number, LocalDateTime date, String string,
-//			LocalDateTime epoch) {
-//		this.visitor_name = name;
-//		this.visitor_org = org;
-//		this.visitor_count = number;
-//		this.person_to_visit = string;
-//		this.visited_at = date;
-//		this.left_at = epoch;
-//	}
-
 	public String get_id() {
 		return _id;
 	}
