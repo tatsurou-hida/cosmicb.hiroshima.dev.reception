@@ -2,7 +2,6 @@ package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,12 +10,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @EnableAutoConfiguration
-@ComponentScan
+
 public class ReceptionController {
 	@Autowired
 	private ReceptionService service;
 
-	@RequestMapping(value="/reception", method=RequestMethod.GET)
+	@RequestMapping(value = "/reception", method = RequestMethod.GET)
 	public ModelAndView index(ModelAndView mv) {
 
 		mv.setViewName("reception");
@@ -25,7 +24,7 @@ public class ReceptionController {
 	}
 
 	//
-	@RequestMapping(value="/result", method=RequestMethod.POST)
+	@RequestMapping(value = "/result", method = RequestMethod.POST)
 	public ModelAndView result(
 			@RequestParam("inputName") String inputName,
 			@RequestParam("inputCompany") String inputCompany,
