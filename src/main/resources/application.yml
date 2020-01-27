@@ -39,4 +39,4 @@ tesseract:
 retention:
   persontovisit:
     period: 36
-    logfilepath: log/persontovisit.log
+    logfilepath: log1/persontovisit.log

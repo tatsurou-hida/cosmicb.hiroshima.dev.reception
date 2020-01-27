@@ -14,49 +14,49 @@ public class OfficeVisit {
 	private String _id;
 
 	@Field("visitor_name")
-	private String visitor_name; //訪問者
+	private String visitorName; //訪問者
 	@Field("visitor_org")
-	private String visitor_org; //所属・会社名
+	private String visitorOrg; //所属・会社名
 	@Field("visitor_count")
-	private int visitor_count; //人数
+	private int visitorCount; //人数
 	@Field("visited_at")
-	private LocalDateTime visited_at; //来訪日時
+	private LocalDateTime visitedAt; //来訪日時
 	@Field("person_to_visit")
-	private String person_to_visit; //訪問先
+	private String personToVisit; //訪問先
 	@Field("left_at")
-	private LocalDateTime left_at; //退室日時
+	private LocalDateTime leftAt; //退室日時
 
-//	public OfficeVisit(
-//			String _id,
-//			String visitor_name,
-//			String visitor_org,
-//			int visitor_count,
-//			String person_to_visit,
-//			LocalDateTime visited_at,
-//			LocalDateTime left_at) {
-//
-//		this._id = _id;
-//		this.visitor_name = visitor_name;
-//		this.visitor_org = visitor_org;
-//		this.visitor_count = visitor_count;
-//		this.person_to_visit = person_to_visit;
-//		this.visited_at = visited_at;
-//		this.left_at = left_at;
-//
-//	}
+	//	public OfficeVisit(
+	//			String _id,
+	//			String visitor_name,
+	//			String visitor_org,
+	//			int visitor_count,
+	//			String person_to_visit,
+	//			LocalDateTime visited_at,
+	//			LocalDateTime left_at) {
+	//
+	//		this._id = _id;
+	//		this.visitor_name = visitor_name;
+	//		this.visitor_org = visitor_org;
+	//		this.visitor_count = visitor_count;
+	//		this.person_to_visit = person_to_visit;
+	//		this.visited_at = visited_at;
+	//		this.left_at = left_at;
+	//
+	//	}
 
-//	public OfficeVisit() {
-//	}
+	//	public OfficeVisit() {
+	//	}
 
-//	public OfficeVisit(String name, String org, Integer number, LocalDateTime date, String string,
-//			LocalDateTime epoch) {
-//		this.visitor_name = name;
-//		this.visitor_org = org;
-//		this.visitor_count = number;
-//		this.person_to_visit = string;
-//		this.visited_at = date;
-//		this.left_at = epoch;
-//	}
+	//	public OfficeVisit(String name, String org, Integer number, LocalDateTime date, String string,
+	//			LocalDateTime epoch) {
+	//		this.visitor_name = name;
+	//		this.visitor_org = org;
+	//		this.visitor_count = number;
+	//		this.person_to_visit = string;
+	//		this.visited_at = date;
+	//		this.left_at = epoch;
+	//	}
 
 	public String get_id() {
 		return _id;
@@ -67,62 +67,62 @@ public class OfficeVisit {
 	}
 
 	public String getVisitor_name() {
-		return visitor_name;
+		return visitorName;
 	}
 
 	public void setVisitor_name(String name) {
-		this.visitor_name = name;
+		this.visitorName = name;
 	}
 
 	public String getVisitor_org() {
-		return visitor_org;
+		return visitorOrg;
 	}
 
 	public void setVisitor_org(String org) {
-		this.visitor_org = org;
+		this.visitorOrg = org;
 	}
 
 	public int getVisitor_count() {
-		return visitor_count;
+		return visitorCount;
 	}
 
 	public void setVisitor_count(Integer num) {
-		this.visitor_count = num;
+		this.visitorCount = num;
 	}
 
 	public LocalDateTime getVisited_at() {
-		return visited_at;
+		return visitedAt;
 	}
 
 	public void setVisited_at(LocalDateTime date) {
-		this.visited_at = date;
+		this.visitedAt = date;
 	}
 
 	public String getPerson_to_visit() {
-		return person_to_visit;
+		return personToVisit;
 	}
 
 	public void setPerson_to_visit(String name) {
-		this.person_to_visit = name;
+		this.personToVisit = name;
 	}
 
 	public LocalDateTime getLeft_at() {
-		return left_at;
+		return leftAt;
 	}
 
 	public void setLeft_at(LocalDateTime date) {
-		this.left_at = date;
+		this.leftAt = date;
 	}
 
 	public String getDateStr() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return sdf.format(visited_at);
+		return sdf.format(visitedAt);
 	}
 
 	@Override
 	public String toString() {
-		return "OfficeVisit [_id=" + _id + ", visitor_name=" + visitor_name + ", visitor_org=" + visitor_org
-				+ ", visitor_count=" + visitor_count + ", visited_at=" + visited_at + ", person_to_visit="
-				+ person_to_visit + ", left_at=" + left_at + "]";
+		return "OfficeVisit [_id=" + _id + ", visitor_name=" + visitorName + ", visitor_org=" + visitorOrg
+				+ ", visitor_count=" + visitorCount + ", visited_at=" + visitedAt + ", person_to_visit="
+				+ personToVisit + ", left_at=" + leftAt + "]";
 	}
 }

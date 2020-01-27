@@ -1,0 +1,16 @@
+<configuration>
+<!-- ｢どこに｣｢どんなレイアウト｣で出力するのか -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy/MM/dd HH:mm:ss.SSS} %-5level [%thread]  %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+<!-- ｢このパッケージやクラス｣は「どのログレベル」以上で出力するのか -->
+  <logger name="cosmicb.hiroshima.dev.reception" level="debug"/>
+
+<!-- Loggerで指定されないものについて、｢どのログレベル｣以上で｢どのAppendar｣に出力するのか -->
+  <root level="info">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
