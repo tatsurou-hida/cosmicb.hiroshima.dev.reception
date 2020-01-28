@@ -35,16 +35,7 @@ public class ReceptionController {
 
 		service.insertVisitor(inputCompany,inputName,inputNum);
 
-		// 強制的に止める
-		try{
-			Thread.sleep(3000); //3秒Sleepする
-
-		}catch(InterruptedException e){
-			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-
-		}finally {
-			mv.setViewName("reception");	// HTML
-		}
+		mv.setViewName("reception");	// HTML
 
 		return mv;
 	}
