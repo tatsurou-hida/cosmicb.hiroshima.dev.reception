@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.example.demo.OfficeVisit;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
+import com.example.demo.entity.OfficeVisit;
 import com.example.demo.form.EraseModel;
 import com.example.demo.form.RowDataModel;
 import com.example.demo.form.SearchModel;

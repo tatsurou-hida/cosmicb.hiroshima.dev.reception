@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.example.demo.OfficeVisit;
+import com.example.demo.entity.OfficeVisit;
 
 public interface VisitorListRepository extends MongoRepository<OfficeVisit, String> {
 

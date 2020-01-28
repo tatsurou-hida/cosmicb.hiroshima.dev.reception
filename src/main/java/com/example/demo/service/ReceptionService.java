@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.service;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.entity.OfficeVisit;
 import com.mongodb.client.MongoClients;
 
 @Service
@@ -48,18 +49,13 @@ public class ReceptionService {
 		officeVisit.setPerson_to_visit("");
 		officeVisit.setLeft_at(epoch);
 
-		try{
-			mongoOps.insert(officeVisit);
+		mongoOps.insert(officeVisit);
 
-			System.out.println("===== レコード追加 =====");
-			System.out.println(name);
-			System.out.println(org);
-			System.out.println(num);
+		System.out.println("===== レコード追加 =====");
+		System.out.println(name);
+		System.out.println(org);
+		System.out.println(num);
 
-		}catch(Exception e){
-			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-
-		}
 	}
 
 	// ----------------------------------------------------------
@@ -67,12 +63,6 @@ public class ReceptionService {
 	// ----------------------------------------------------------
 	public void DbConnection() {
 		String uri = "mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority";
-		try{
 			mongoOps = new MongoTemplate(MongoClients.create(uri), "database");
-
-		}catch(Exception e){
-			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-
-		}
 	}
 }
