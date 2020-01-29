@@ -35,7 +35,7 @@ public class ReceptionController {
 
 		service.insertVisitor(inputCompany,inputName,inputNum);
 
-		mv.setViewName("reception");	// HTML
+		mv.setViewName("announce");	// お待ちください画面へ
 
 		return mv;
 	}
