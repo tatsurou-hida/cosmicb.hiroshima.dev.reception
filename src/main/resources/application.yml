@@ -21,8 +21,8 @@ spring:
       database: database
 #      authentication-database: mongovwdb
 #      grid-fs-database:
-      username: app
-      password: kAz54fgSlnACwxIi
+#     username: 
+#     password: 
 #      repositories:
 #        enabled: true  # if spring data repository support is enabled
 

@@ -17,12 +17,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.OfficeVisit;
+import com.example.demo.ShirahataException;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
 import com.example.demo.form.SearchModel;
@@ -59,8 +57,10 @@ public class VisitorListService {
 	 * @param searchM
 	 * @param mongoConfig
 	 * @return 検索結果
+	 * @throws ShirahataException　投げます
 	 */
-	public List<OfficeVisit> search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig) {
+	public List<OfficeVisit> search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig)
+			throws ShirahataException {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
 		logger.info("★★★★★ Service - search called.");
 
@@ -80,35 +80,40 @@ public class VisitorListService {
 
 		//Query query = new Query();
 
-		if (checked) {
-			//入室者検索
+		try {
 
-			resultSearchList = visitorListRepository.findByVisitedAtBetweenAndPersonToVisitIsOrderByVisitedAtDesc(
-					inputMinDateTime, inputMaxDateTime, "");
+			if (checked) {
+				//入室者検索
+				//QueryMethod
+				resultSearchList = visitorListRepository.findByVisitedAtBetweenAndPersonToVisitIsOrderByVisitedAtDesc(
+						inputMinDateTime, inputMaxDateTime, "");
 
-			//			query.addCriteria(Criteria.where("person_to_visit").is("")
-			//					.andOperator(
-			//							Criteria.where("visited_at").gte(inputMinDateTime),
-			//							Criteria.where("visited_at").lt(inputMaxDateTime)));
+				//			query.addCriteria(Criteria.where("person_to_visit").is("")
+				//					.andOperator(
+				//							Criteria.where("visited_at").gte(inputMinDateTime),
+				//							Criteria.where("visited_at").lt(inputMaxDateTime)));
 
-		} else {
-			//全件検索
-			resultSearchList = visitorListRepository.findByVisitedAtBetweenOrderByVisitedAtDesc(
-					inputMinDateTime,
-					inputMaxDateTime);
-			//			query.addCriteria(new Criteria()
-			//					.andOperator(
-			//							Criteria.where("visited_at").gte(inputMinDateTime),
-			//							Criteria.where("visited_at").lt(inputMaxDateTime)));
+			} else {
+				//全件検索
+				//QueryMethod
+				resultSearchList = visitorListRepository.findByVisitedAtBetweenOrderByVisitedAtDesc(
+						inputMinDateTime, inputMaxDateTime);
+				//			query.addCriteria(new Criteria()
+				//					.andOperator(
+				//							Criteria.where("visited_at").gte(inputMinDateTime),
+				//							Criteria.where("visited_at").lt(inputMaxDateTime)));
+			}
+
+			//		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
+			//		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
+			//				mongoConfig.getDatabase());
+			//		resultSearchList = mongoOps.find(query.limit(2000), OfficeVisit.class);
+
+			return resultSearchList;
+
+		} catch (Exception e) {
+			throw new ShirahataException("i.ex.an.0001", e.getMessage().toString());
 		}
-
-		//		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
-		//		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-		//				mongoConfig.getDatabase());
-		//		resultSearchList = mongoOps.find(query.limit(2000), OfficeVisit.class);
-
-		return resultSearchList;
-
 	}
 
 	/** 退室処理(更新)
@@ -118,20 +123,13 @@ public class VisitorListService {
 	 */
 	public void updateVisitorList(String _id, String personToVisit, SpringDataMongoDBConfig mongoConfig) {
 
-		OfficeVisit officeVisit = new OfficeVisit();
-		officeVisit.set_id(_id);
-		officeVisit.setPerson_to_visit(personToVisit);
-		officeVisit.setLeft_at(LocalDateTime.now());
-		officeVisit.setVisitor_name(officeVisit.getVisitor_name());
+		//更新対象のデータを取得
+		OfficeVisit entity = visitorListRepository.findById(_id).get();
+		entity.setPerson_to_visit(personToVisit);
+		entity.setLeft_at(LocalDateTime.now());
 
-		officeVisit = visitorListRepository.save(officeVisit);
-
-		Query query = new Query();
-		query.addCriteria(Criteria.where("_id").is(_id));
-
-		Update update = new Update();
-		update.set("left_at", LocalDateTime.now());
-		update.set("person_to_visit", personToVisit);
+		//QueryMethod
+		OfficeVisit e = visitorListRepository.save(entity);
 
 		//DB接続
 		//MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
@@ -156,8 +154,15 @@ public class VisitorListService {
 		//保存先を設定ファイルから取得
 		String logFileName = rConfig.getPersontovisit().getLogfilepath();
 		File file = new File(logFileName);
+		File directory = new File(file.getParent());
+
+		//保存先のディレクトリが存在するかチェックする
+		if (directory.exists() == false) {
+			return "No exist directory";
+		}
 
 		//消去対象ログを取得
+		//QueryMethod
 		resultSearchList = visitorListRepository.findByVisitedAtLessThanAndPersonToVisitNot(startingDate, "");
 
 		//		Query query = new Query();
@@ -173,31 +178,25 @@ public class VisitorListService {
 
 		if (resultSearchList.size() > 0) {
 			//取得したログに対してそれぞれ消去していく
-			for (int i = 0; i < resultSearchList.size(); i++) {
+			for (OfficeVisit entity : resultSearchList) {
 
-				visitorListRepository.deleteById(resultSearchList.get(i).get_id());
+				//消去処理
+				visitorListRepository.deleteById(entity.get_id());
 
-				//				query = new Query();
-				//				query.addCriteria(Criteria
-				//						.where("_id").is(resultSearchList.get(i).get_id()));
-				//				mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()), mongoConfig.getDatabase());
-				//				mongoOps.remove(query, OfficeVisit.class);
-
-				//ログ書き込み
 				try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));) {
 
 					if (checkFileState(file)) {
 
 						bw.write(LocalDateTime.now().format(
 								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ","); //消去日時
-						bw.write(resultSearchList.get(i).get_id() + ","); //対象データ：ID
-						bw.write(resultSearchList.get(i).getVisited_at().format(
+						bw.write(entity.get_id() + ","); //対象データ：ID
+						bw.write(entity.getVisited_at().format(
 								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")) + ","); //対象データ：訪問日時
-						bw.write(resultSearchList.get(i).getVisitor_org() + ","); //対象データ：会社名
-						bw.write(resultSearchList.get(i).getVisitor_name() + ","); //対象データ：名前
-						bw.write(resultSearchList.get(i).getVisitor_count() + ","); //対象データ：人数
-						bw.write(resultSearchList.get(i).getPerson_to_visit() + ","); //対象データ：訪問先
-						bw.write(resultSearchList.get(i).getLeft_at().format(
+						bw.write(entity.getVisitor_org() + ","); //対象データ：会社名
+						bw.write(entity.getVisitor_name() + ","); //対象データ：名前
+						bw.write(entity.getVisitor_count() + ","); //対象データ：人数
+						bw.write(entity.getPerson_to_visit() + ","); //対象データ：訪問先
+						bw.write(entity.getLeft_at().format(
 								DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))); //対象データ：退出日時
 						bw.newLine();
 						bw.close();

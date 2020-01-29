@@ -3,18 +3,12 @@ package com.example.demo;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.example.demo.controller.VisitorListController;
-
 @Document(collection = "officeVisit")
 public class OfficeVisit {
-
-	protected final static Logger logger = LoggerFactory.getLogger(VisitorListController.class);
 
 	@Id
 	private String _id;

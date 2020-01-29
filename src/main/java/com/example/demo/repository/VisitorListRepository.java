@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -14,12 +15,14 @@ public interface VisitorListRepository extends MongoRepository<OfficeVisit, Stri
 	public List<OfficeVisit> findByVisitedAtBetweenAndPersonToVisitIsOrderByVisitedAtDesc(LocalDateTime startDate,
 			LocalDateTime endDate, String personToVisit);
 
+	public Optional<OfficeVisit> findById(String _id);
+
+	//public List<OfficeVisit> findOne(String id);
+
 	public List<OfficeVisit> findByVisitedAtLessThanAndPersonToVisitNot(LocalDateTime startDate, String personToVisit);
 
 	public void deleteById(String id);
 
-	public OfficeVisit save(OfficeVisit entity);
-
-	//public <S extends OfficeVisit> S save(S OfficeVisit);
+	public OfficeVisit save(Optional<OfficeVisit> entity);
 
 }

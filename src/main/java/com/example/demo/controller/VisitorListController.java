@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.terasoluna.gfw.common.message.ResultMessages;
 
 import com.example.demo.OfficeVisit;
+import com.example.demo.ShirahataException;
 import com.example.demo.config.RetentionConfig;
 import com.example.demo.config.SpringDataMongoDBConfig;
 import com.example.demo.form.EraseModel;
@@ -72,21 +74,28 @@ public class VisitorListController {
 		EraseModel eraseM = new EraseModel();
 		VisitorListExitSendModel sendModel = new VisitorListExitSendModel();
 
-		logger.trace("★★★★★ Controller called.");
+		logger.info("★★★★★ Controller called.");
 
 		//保存期間の設定を読み込んでDeleteModelにセットする
 		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
-		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
+		List<OfficeVisit> list;
 
-		// 検索結果entityをmodelに設定
-		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(list);
+		try {
+			list = visitorListService.search(s, mongoConfig);
+			// 検索結果entityをmodelに設定
+			List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+			modelList = makeList(list);
+			model.addAttribute("eraseM", eraseM);
+			model.addAttribute("sendModel", sendModel);
+			model.addAttribute("list", modelList);
 
-		model.addAttribute("eraseM", eraseM);
-		model.addAttribute("sendModel", sendModel);
-		model.addAttribute("list", modelList);
+		} catch (ShirahataException e) {
+			// TODO 自動生成された catch ブロック
+			ResultMessages messages = ResultMessages.error().add(e.getCode(), e.getArgString());
+			model.addAttribute(messages);
+		}
 
 		logger.debug(model.getAttribute("s").toString());
 
@@ -105,15 +114,19 @@ public class VisitorListController {
 		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
-		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
+		List<OfficeVisit> list;
+		try {
+			list = visitorListService.search(s, mongoConfig);
+			// 検索結果entityをmodelに設定
+			List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+			modelList = makeList(list);
 
-		// 検索結果entityをmodelに設定
-		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(list);
-
-		model.addAttribute("eraseM", eraseM);
-		model.addAttribute("sendModel", sendModel);
-		model.addAttribute("list", modelList);
+			model.addAttribute("eraseM", eraseM);
+			model.addAttribute("sendModel", sendModel);
+			model.addAttribute("list", modelList);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		logger.debug(model.getAttribute("s").toString());
 
@@ -139,21 +152,27 @@ public class VisitorListController {
 		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
-		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
+		List<OfficeVisit> list;
 
-		// 検索結果entityをmodelに設定
-		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(list);
+		try {
+			list = visitorListService.search(s, mongoConfig);
+			// 検索結果entityをmodelに設定
+			List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+			modelList = makeList(list);
 
-		model.addAttribute("eraseM", eraseM);
-		model.addAttribute("sendModel", sendModel);
-		model.addAttribute("list", modelList);
+			model.addAttribute("eraseM", eraseM);
+			model.addAttribute("sendModel", sendModel);
+			model.addAttribute("list", modelList);
 
-		logger.debug(model.getAttribute("s").toString());
+			logger.debug(model.getAttribute("s").toString());
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
-		//return "redirect:/list";
+
 	}
 
 	@RequestMapping(value = "/erase", method = RequestMethod.POST)
@@ -164,7 +183,7 @@ public class VisitorListController {
 
 		//削除処理
 		String msg = visitorListService.eraseVisitorList(mongoConfig, rConfig);
-		if (msg.equals("FileNotFoundException")) {
+		if (msg.equals("No exist directory")) {
 			msg = "Error: " + msg + "\n"
 					+ "設定ファイル指定のパスにディレクトリが存在しません。" + "\n"
 					+ "設定値: " + rConfig.getPersontovisit().getLogfilepath();
@@ -181,19 +200,25 @@ public class VisitorListController {
 		eraseM.setPeriod(rConfig.getPersontovisit().getPeriod());
 
 		//検索
-		List<OfficeVisit> list = visitorListService.search(s, mongoConfig);
+		List<OfficeVisit> list;
+		try {
+			list = visitorListService.search(s, mongoConfig);
+			// 検索結果entityをmodelに設定
+			List<RowDataModel> modelList = new ArrayList<RowDataModel>();
+			modelList = makeList(list);
 
-		// 検索結果entityをmodelに設定
-		List<RowDataModel> modelList = new ArrayList<RowDataModel>();
-		modelList = makeList(list);
+			model.addAttribute("eraseM", eraseM);
+			model.addAttribute("sendModel", sendModel);
+			model.addAttribute("list", modelList);
+			model.addAttribute("msg", msg);
 
-		model.addAttribute("eraseM", eraseM);
-		model.addAttribute("sendModel", sendModel);
-		model.addAttribute("list", modelList);
-		model.addAttribute("msg", msg);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		//Thymeleafを表示する;
 		return "VisitorList";
+
 	}
 
 	/**検索結果をVIEW用に書式変更を行うメソッド
