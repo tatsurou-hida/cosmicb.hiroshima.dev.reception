@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
@@ -19,10 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.CantWriteFileException;
+import com.example.demo.CustomException;
+import com.example.demo.DatabaseException;
+import com.example.demo.DirectoryNotFoundException;
 import com.example.demo.OfficeVisit;
-import com.example.demo.ShirahataException;
 import com.example.demo.config.RetentionConfig;
-import com.example.demo.config.SpringDataMongoDBConfig;
 import com.example.demo.form.SearchModel;
 import com.example.demo.repository.VisitorListRepository;
 
@@ -57,10 +58,10 @@ public class VisitorListService {
 	 * @param searchM
 	 * @param mongoConfig
 	 * @return 検索結果
-	 * @throws ShirahataException　投げます
+	 * @throws CustomException　投げます
 	 */
-	public List<OfficeVisit> search(SearchModel searchM, SpringDataMongoDBConfig mongoConfig)
-			throws ShirahataException {
+	public List<OfficeVisit> search(SearchModel searchM)
+			throws DatabaseException {
 		//カレンダーおよび未退室チェックボックスの情報から検索する
 		logger.info("★★★★★ Service - search called.");
 
@@ -78,8 +79,6 @@ public class VisitorListService {
 		//クエリ上の都合でinputMaxDateTimeに＋1日する
 		inputMaxDateTime = inputMaxDateTime.plusDays(1);
 
-		//Query query = new Query();
-
 		try {
 
 			if (checked) {
@@ -88,31 +87,16 @@ public class VisitorListService {
 				resultSearchList = visitorListRepository.findByVisitedAtBetweenAndPersonToVisitIsOrderByVisitedAtDesc(
 						inputMinDateTime, inputMaxDateTime, "");
 
-				//			query.addCriteria(Criteria.where("person_to_visit").is("")
-				//					.andOperator(
-				//							Criteria.where("visited_at").gte(inputMinDateTime),
-				//							Criteria.where("visited_at").lt(inputMaxDateTime)));
-
 			} else {
 				//全件検索
 				//QueryMethod
 				resultSearchList = visitorListRepository.findByVisitedAtBetweenOrderByVisitedAtDesc(
 						inputMinDateTime, inputMaxDateTime);
-				//			query.addCriteria(new Criteria()
-				//					.andOperator(
-				//							Criteria.where("visited_at").gte(inputMinDateTime),
-				//							Criteria.where("visited_at").lt(inputMaxDateTime)));
 			}
-
-			//		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
-			//		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-			//				mongoConfig.getDatabase());
-			//		resultSearchList = mongoOps.find(query.limit(2000), OfficeVisit.class);
-
 			return resultSearchList;
 
 		} catch (Exception e) {
-			throw new ShirahataException("i.ex.an.0001", e.getMessage().toString());
+			throw new DatabaseException("e.recep.ch.9003", e.getMessage().toString());
 		}
 	}
 
@@ -121,7 +105,7 @@ public class VisitorListService {
 	 * @param personToVisit 訪問先
 	 * @param mongoConfig mongoDB用モデル
 	 */
-	public void updateVisitorList(String _id, String personToVisit, SpringDataMongoDBConfig mongoConfig) {
+	public OfficeVisit updateVisitorList(String _id, String personToVisit) throws DatabaseException {
 
 		//更新対象のデータを取得
 		OfficeVisit entity = visitorListRepository.findById(_id).get();
@@ -129,13 +113,14 @@ public class VisitorListService {
 		entity.setLeft_at(LocalDateTime.now());
 
 		//QueryMethod
-		OfficeVisit e = visitorListRepository.save(entity);
+		try {
+			entity = visitorListRepository.save(entity);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new DatabaseException("e.recep.ch.9003", e.getMessage().toString());
+		}
 
-		//DB接続
-		//MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-		//mongoConfig.getDatabase());
-		//DB更新
-		//mongoOps.updateFirst(query, update, OfficeVisit.class);
+		return entity;
 
 	}
 
@@ -144,7 +129,8 @@ public class VisitorListService {
 	 * @param rConfig application.yml - データ削除設定関連のモデル
 	 * @return 消去結果
 	 */
-	public String eraseVisitorList(SpringDataMongoDBConfig mongoConfig, RetentionConfig rConfig) {
+	public List<OfficeVisit> eraseVisitorList(RetentionConfig rConfig)
+			throws CustomException, DirectoryNotFoundException, CantWriteFileException {
 
 		List<OfficeVisit> resultSearchList;
 
@@ -158,23 +144,12 @@ public class VisitorListService {
 
 		//保存先のディレクトリが存在するかチェックする
 		if (directory.exists() == false) {
-			return "No exist directory";
+			throw new DirectoryNotFoundException("e.recep.ch.9001", directory.getPath());
 		}
 
 		//消去対象ログを取得
 		//QueryMethod
 		resultSearchList = visitorListRepository.findByVisitedAtLessThanAndPersonToVisitNot(startingDate, "");
-
-		//		Query query = new Query();
-		//		query.addCriteria(new Criteria()
-		//				.andOperator(
-		//						Criteria.where("visited_at").lt(startingDate),
-		//						Criteria.where("person_to_visit").ne("")));
-		//		query.with(Sort.by(Sort.Direction.DESC, "visited_at"));
-		//
-		//		MongoOperations mongoOps = new MongoTemplate(MongoClients.create(mongoConfig.getUri()),
-		//				mongoConfig.getDatabase());
-		//		resultSearchList = mongoOps.find(query, OfficeVisit.class);
 
 		if (resultSearchList.size() > 0) {
 			//取得したログに対してそれぞれ消去していく
@@ -203,26 +178,22 @@ public class VisitorListService {
 					} else {
 						//ログファイルに書き込みできない場合
 						logger.error("Can't write logfile");
-						return "Can't write logfile";
-					}
+						throw new CantWriteFileException("w.recep.ch.5000", String.valueOf(resultSearchList.size()));
 
-				} catch (FileNotFoundException e) {
-					logger.error("FileNotFoundException");
-					e.printStackTrace();
-					return "FileNotFoundException";
+					}
 
 				} catch (IOException e) {
 					logger.error("IOException");
 					e.printStackTrace();
-					return "IOException";
+					throw new CustomException("e.recep.ch.9002", String.valueOf(resultSearchList.size()));
+
 				}
 			}
-			return "success (削除対象件数: " + resultSearchList.size() + "件)";
+			return resultSearchList;
 
 		} else {
 			//データ証拠件数が0件の場合
-			return "削除対象のデータはありませんでした。";
-
+			return resultSearchList;
 		}
 
 	}
@@ -236,10 +207,18 @@ public class VisitorListService {
 		int count = 0;
 
 		if (f.canWrite()) {
+			//書込可ならtrueをreturn
 			return true;
 		} else {
+			//書込不可の間繰り返す
 			while (f.canWrite() == false) {
+				//カウントのインクリメント
 				count++;
+
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				if (count > 100) {
 					return false;
 				}
