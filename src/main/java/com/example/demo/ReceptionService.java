@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.entity.OfficeVisit;
 import com.mongodb.client.MongoClients;
 
 @Service

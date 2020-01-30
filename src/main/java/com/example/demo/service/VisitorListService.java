@@ -22,8 +22,8 @@ import com.example.demo.CantWriteFileException;
 import com.example.demo.CustomException;
 import com.example.demo.DatabaseException;
 import com.example.demo.DirectoryNotFoundException;
-import com.example.demo.OfficeVisit;
 import com.example.demo.config.RetentionConfig;
+import com.example.demo.entity.OfficeVisit;
 import com.example.demo.form.SearchModel;
 import com.example.demo.repository.VisitorListRepository;
 

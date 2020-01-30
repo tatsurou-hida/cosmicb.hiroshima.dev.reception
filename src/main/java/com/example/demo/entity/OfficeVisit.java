@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.entity;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
