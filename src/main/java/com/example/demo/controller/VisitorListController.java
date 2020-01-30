@@ -331,6 +331,13 @@ public class VisitorListController {
 		return rowDataList;
 	}
 
+	/** 検索して表示する処理
+	 * @param s セッション中のSearchModel
+	 * @param model
+	 * @param eraseM データ保存期間格納モデル
+	 * @param sendM 訪問先格納モデル
+	 * @param messages メッセージ
+	 */
 	public void DisplayWithSearch(@ModelAttribute("s") SearchModel s, Model model, EraseModel eraseM,
 			VisitorListExitSendModel sendM, ResultMessages messages) {
 
