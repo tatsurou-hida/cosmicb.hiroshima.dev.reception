@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.terasoluna.gfw.common.message.ResultMessages;
 
@@ -30,6 +32,7 @@ import com.example.demo.entity.OfficeVisit;
 import com.example.demo.form.EraseModel;
 import com.example.demo.form.RowDataModel;
 import com.example.demo.form.SearchModel;
+import com.example.demo.form.VisitorListEditModel;
 import com.example.demo.form.VisitorListExitSendModel;
 import com.example.demo.service.VisitorListService;
 
@@ -101,6 +104,25 @@ public class VisitorListController {
 
 		//Thymeleaf「VisitorList.html」を表示する;
 		return "VisitorList";
+	}
+
+	@RequestMapping(value = "getJsonData", method = RequestMethod.GET)
+	@ResponseBody //thymeleafがreturnした値をHTMLファイル名とみなして処理をしようとするので、例外でおちてしまいます。（Exception processing template・・）
+	public String getJsonData(Model model, @ModelAttribute VisitorListEditModel editM) {
+
+		JSONObject json = new JSONObject();
+
+		//引数のeditMを使用して更新する
+		OfficeVisit entity = null;
+		try {
+			json = visitorListService.updateVisitorLisetEdit(
+					editM.getVisitor_id(), editM.getVisitor_name(), editM.getVisitor_org());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		return json.toString();
+
 	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.POST)

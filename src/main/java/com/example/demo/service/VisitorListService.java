@@ -16,6 +16,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.CantWriteFileException;
@@ -121,6 +122,38 @@ public class VisitorListService {
 		}
 
 		return entity;
+
+	}
+
+	/** 管理画面更新
+	 * @param _id
+	 * @param visitorName
+	 * @param visitorOrg
+	 * @return entity
+	 * @throws DatabaseException
+	 */
+	public JSONObject updateVisitorLisetEdit(String _id, String visitorName, String visitorOrg)
+			throws DatabaseException {
+
+		//更新対象のデータを取得
+		OfficeVisit entity = visitorListRepository.findById(_id).get();
+		entity.setVisitor_name(visitorName);
+		entity.setVisitor_org(visitorOrg);
+		JSONObject json = new JSONObject();
+
+		//QueryMethod
+		try {
+			entity = visitorListRepository.save(entity);
+			json.put("_id", entity.get_id());
+			json.put("visitorName", entity.getVisitor_name());
+			json.put("visitorOrg", entity.getVisitor_org());
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new DatabaseException("e.recep.ch.900x", e.getMessage().toString());
+		}
+
+		return json;
 
 	}
 

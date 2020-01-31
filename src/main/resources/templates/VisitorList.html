@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <!-- BootstrapのCSS読み込み -->
 <link rel="stylesheet" media="all" 	th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
-<!-- x-editable(直接編集ライブラリ)のCSS読み込み -->
-<link rel="stylesheet" media="all" 	th:href="@{/webjars/x-editable-bootstrap/1.5.1/css/bootstrap-editable.css}" />
-
 
 <title>管 理 画 面</title>
 
@@ -64,9 +61,10 @@
 				<tbody>
 					<tr th:each="row, rowStat : ${list}">
 						<td class="align-middle mx-auto" th:text="${row.visited_at}" />
-						<td class="align-middle" th:id="org" th:text="${row.visitor_org}" />
-						<td class="align-middle" th:id="'name' + ${rowStat.index}" th:text="${row.visitor_name}" />
-						<td class="align-middle" th:text="${row.diffTime}" th:classappend="${row.diffMinutes > 300} ? bg-danger :'' "></td>
+						<td class="align-middle" id="org" th:text="${row.visitor_org}" />
+						<td class="align-middle" id="name" th:text="${row.visitor_name}" />
+						<td class="align-middle" id="diff" th:name="${row._id}"  th:text="${row.diffTime}" th:classappend="${row.diffMinutes > 300} ? bg-danger :'' ">
+						</td>
 						<td class="align-middle">
 							<form action="#" th:action="@{/exit/{id}(id=${row._id})}" th:id="'form' + ${rowStat.index}"  method="post" th:object="${sendM}">
 								<div th:if="${row.person_to_visit ==''}">
@@ -84,7 +82,7 @@
 								</div>
 							</form>
 						</td>
-						<td class="align-middle">
+						<td class="align-middle" id="exitime">
 							<div th:unless="${row.person_to_visit ==''}">
 								<span th:text="${row.left_at}"></span>
 							</div>
@@ -108,8 +106,6 @@
 <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 <!-- BootstrapのJS読み込み -->
 <script th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
-<!-- x-editableのJS読み込み -->
-<script th:src="@{/webjars/x-editable-bootstrap/1.5.1/js/bootstrap-editable.min.js}"></script>
 <script src="/script/visitorlist.js"></script>
 
 </body>
