@@ -19,11 +19,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+<<<<<<< HEAD
 import com.example.demo.CantWriteFileException;
 import com.example.demo.CustomException;
 import com.example.demo.DatabaseException;
 import com.example.demo.DirectoryNotFoundException;
+=======
+>>>>>>> refs/heads/master
 import com.example.demo.config.RetentionConfig;
+<<<<<<< HEAD
+=======
+import com.example.demo.config.SpringDataMongoDBConfig;
+>>>>>>> refs/heads/master
 import com.example.demo.entity.OfficeVisit;
 import com.example.demo.form.SearchModel;
 import com.example.demo.repository.VisitorListRepository;

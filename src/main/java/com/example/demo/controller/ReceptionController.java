@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.example.demo.service.ReceptionService;
 
 @Controller
 @EnableAutoConfiguration
@@ -33,7 +35,7 @@ public class ReceptionController {
 
 		service.insertVisitor(inputCompany,inputName,inputNum);
 
-		mv.setViewName("reception"); // HTML
+		mv.setViewName("reception");	// HTML
 
 		return mv;
 	}
