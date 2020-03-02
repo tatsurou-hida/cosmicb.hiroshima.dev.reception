@@ -15,14 +15,14 @@ spring:
 # MONGODB (MongoProperties)
   data:
     mongodb:
-      host: xxx ### change
-      port: 0 ### change
-      uri: xxx ### change
+      host: cluster0-cf1b0.gcp.mongodb.net
+      port: 27017
+      uri: mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority
       database: database
 #      authentication-database: mongovwdb
 #      grid-fs-database:
-      username: xxx ### change
-      password: xxx ### change
+#     username: 
+#     password: 
 #      repositories:
 #        enabled: true  # if spring data repository support is enabled
 
@@ -39,4 +39,4 @@ tesseract:
 retention:
   persontovisit:
     period: 36
-    logfilepath: log1/persontovisit.log
+    logfilepath: log/persontovisit.log

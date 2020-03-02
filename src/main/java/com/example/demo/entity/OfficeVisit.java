@@ -27,6 +27,10 @@ public class OfficeVisit {
 	private LocalDateTime leftAt; //退室日時
 
 	public String get_id() {
+<<<<<<< HEAD
+
+=======
+>>>>>>> refs/heads/master
 		return _id;
 	}
 
