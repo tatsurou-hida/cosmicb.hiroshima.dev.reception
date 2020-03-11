@@ -1,35 +1,49 @@
 @charset "UTF-8";
 
-canvas {
-	border: 1px solid #888;
+/* IE等でドラッグ時に画面がずれないようにする */
+body, canvas {
+	-ms-touch-action: none;
+	touch-action: none;
 }
 
 .canvas-wrapper {
-	margin: 10px;
-	/* 	width: 90%; */
-	height: 450px;
+	width: 100%;
+	height: 100%;
+	text-align:  center;
+}
+
+canvas {
+	display: inline-block;
+	vertical-align:  middle;
+	border: 1px solid #888;
 }
 
 #modal-display {
-  display: none;
-  position: fixed!important;
-  top: 0!important;
-  left: 0!important;
-  width: 100%;
-  max-width: 100%!important;
-  height: 100%;
-  background: rgba(0,0,0,0.45);
+	display: none;
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100%;
+	max-width: 100% !important;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.45);
 }
 
 #modal-display img {
-  position: absolute!important;
-  top: 0!important;
-  bottom: 0!important;
-  left: 0!important;
-  right: 0!important;
-  margin: auto;
-/*   max-width: 90%; */
-/*   max-height: 90%; */
-  height: auto;
-  width: 90%;
+	position: absolute !important;
+	top: 0 !important;
+	bottom: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	margin: auto;
+	/*   max-width: 90%; */
+	/*   max-height: 90%; */
+	height: auto;
+	width: 50%;
+	background-color: #fff;
+}
+
+img.thumbnail {
+	height: 36px;
+	border: thin solid #ddd;
 }

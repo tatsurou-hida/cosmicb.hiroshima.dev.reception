@@ -30,16 +30,7 @@ jQuery(function($) {
 												+ "<td></td>" // 退室時間
 												+ "</tr>");
 					});
-});
-
-$(document).on("click", "#btnAdd", function() {
-	//動的に作成した追加処理の処理（発火確認済み）
-
-
-});
-
-jQuery(function($) {
-	$("[id^=org]")
+	$("td[id^=org]")
 			.click(
 					function() {
 						if (!$(this).hasClass('on')) {
@@ -111,9 +102,7 @@ jQuery(function($) {
 											});
 						}
 					});
-});
 
-jQuery(function($) {
 	$("[id^=name]")
 			.click(
 					function() {
@@ -187,4 +176,18 @@ jQuery(function($) {
 											});
 						}
 					});
+
+	// 画像のmodal表示
+	$("img.toggle-modal").click(function() {
+		$("#modal-display").html($(this).prop('outerHTML'));
+		$("#modal-display").fadeIn(200);
+	});
+	$("#modal-display, #modal-display img").click(function() {
+		$("#modal-display").fadeOut(200);
+	});
+});
+
+$(document).on("click", "#btnAdd", function() {
+	// 動的に作成した追加処理の処理（発火確認済み）
+
 });

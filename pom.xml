@@ -40,7 +40,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -76,11 +75,11 @@
 			<optional>true</optional>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.terasoluna.gfw/terasoluna-gfw-common -->
-<dependency>
-    <groupId>org.terasoluna.gfw</groupId>
-    <artifactId>terasoluna-gfw-common</artifactId>
-    <version>5.6.0.RC2</version>
-</dependency>
+		<dependency>
+			<groupId>org.terasoluna.gfw</groupId>
+			<artifactId>terasoluna-gfw-common</artifactId>
+			<version>5.6.0.RC2</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "tesseract",
+    "type": "com.example.demo.config.TesseractConfig",
+    "description": "Configuration of Tesseract, OSC libraly"
+  },
+  {
+    "name": "retention",
+    "type": "com.example.demo.config.RetentionConfig",
+    "description": "Configuration of data retention"
+  }
+]}

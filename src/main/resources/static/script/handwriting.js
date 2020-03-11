@@ -4,34 +4,34 @@
 $(function() {
 
 	// canvasのサイズ調整
-	var $wrapper = $('.canvas-wrapper');
-	$wrapper.children('canvas').attr('width', $wrapper.width()).attr('height',
-			$wrapper.height());
+//	var $wrapper = $('.canvas-wrapper');
+//	$wrapper.children('canvas').attr('width', $wrapper.width()).attr('height',
+//			$wrapper.height());
 
 	// var canvas = document.getElementById('canvassample');
 	var canvas = $('canvas.handwriting')[0];
+
 	var ctx = canvas.getContext('2d');
 	var moveflg = 0;
 	var Xpoint;
 	var Ypoint;
+	var ox, oy, x, y;
+	var isMoving = false;
 
-	// 初期値（サイズ、色、アルファ値）の決定
 	var defSize = 3, defColor = "#222";
 
-	// ストレージの初期化
-	var myStorage = localStorage;
-	window.onload = initLocalStorage();
-
 	// PC対応
-	canvas.addEventListener('mousedown', startPoint, false);
-	canvas.addEventListener('mousemove', movePoint, false);
-	canvas.addEventListener('mouseup', endPoint, false);
+	canvas.addEventListener('mousedown', onMouseDown, false);
+	canvas.addEventListener('mousemove', onMouseMove, false);
+	canvas.addEventListener('mouseup', onMouseUp, false);
 	// スマホ対応
-	canvas.addEventListener('touchstart', startPoint, false);
-	canvas.addEventListener('touchmove', movePoint, false);
-	canvas.addEventListener('touchend', endPoint, false);
+	canvas.addEventListener('touchstart', onDown, false);
+	canvas.addEventListener('touchmove', onMove, false);
+	canvas.addEventListener('touchend', onUp, false);
 
-	$('button.handwriting-reset').on('click', clearCanvas);
+	resetCanvas();
+
+	$('button.handwriting-reset').on('click', resetCanvas);
 	$('#doOCR').on('click', convertToDataURL)
 
 	// 画像のmodal表示
@@ -43,49 +43,49 @@ $(function() {
 		$("#modal-display").fadeOut(200);
 	});
 
-	function startPoint(e) {
-		e.preventDefault();
-		ctx.beginPath();
-
-		Xpoint = e.layerX;
-		Ypoint = e.layerY;
-
-		ctx.moveTo(Xpoint, Ypoint);
+	function onDown(event) {
+		event.preventDefault();
+		isMoving = true;
+		ox = event.touches[0].pageX - event.target.getBoundingClientRect().left;
+		oy = event.touches[0].pageY - event.target.getBoundingClientRect().top;
+		event.stopPropagation();
+	}
+	function onMouseDown(event) {
+		event.preventDefault();
+		ox = event.clientX - event.target.getBoundingClientRect().left;
+		oy = event.clientY - event.target.getBoundingClientRect().top;
+		isMoving = true;
 	}
 
-	function movePoint(e) {
-		if (e.buttons === 1 || e.witch === 1 || e.type == 'touchmove') {
-			Xpoint = e.layerX;
-			Ypoint = e.layerY;
-			moveflg = 1;
-
-			ctx.lineTo(Xpoint, Ypoint);
-			ctx.lineCap = "round";
-			ctx.lineWidth = defSize * 2;
-			ctx.strokeStyle = defColor;
-			ctx.stroke();
-
+	function onMove(event) {
+		if (isMoving) {
+			x = event.touches[0].pageX
+					- event.target.getBoundingClientRect().left;
+			y = event.touches[0].pageY
+					- event.target.getBoundingClientRect().top;
+			drawLine();
+			ox = x;
+			oy = y;
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	}
+	function onMouseMove(event) {
+		if (isMoving) {
+			x = event.clientX - event.target.getBoundingClientRect().left;
+			y = event.clientY - event.target.getBoundingClientRect().top;
+			drawLine();
+			ox = x;
+			oy = y;
 		}
 	}
 
-	function endPoint(e) {
-
-		if (moveflg === 0) {
-			ctx.lineTo(Xpoint - 1, Ypoint - 1);
-			ctx.lineCap = "round";
-			ctx.lineWidth = defSize * 2;
-			ctx.strokeStyle = defColor;
-			ctx.stroke();
-
-		}
-		moveflg = 0;
-		setLocalStoreage();
+	function onUp(event) {
+		isMoving = false;
+		event.stopPropagation();
 	}
-
-	function clearCanvas() {
-		initLocalStorage();
-		temp = [];
-		resetCanvas();
+	function onMouseUp(event) {
+		isMoving = false;
 	}
 
 	function resetCanvas() {
@@ -96,25 +96,6 @@ $(function() {
 		$('input.handwriting-dataurl').val(canvas.toDataURL());
 	}
 
-	function initLocalStorage() {
-		myStorage.setItem("__log", JSON.stringify([]));
-	}
-	function setLocalStoreage() {
-		var png = canvas.toDataURL();
-		var logs = JSON.parse(myStorage.getItem("__log"));
-
-		setTimeout(function() {
-			logs.unshift({
-				0 : png
-			});
-
-			myStorage.setItem("__log", JSON.stringify(logs));
-
-			currentCanvas = 0;
-			temp = [];
-		}, 0);
-	}
-
 	function draw(src) {
 		var img = new Image();
 		img.src = src;
@@ -123,4 +104,12 @@ $(function() {
 			ctx.drawImage(img, 0, 0);
 		}
 	}
+
+	function drawLine() {
+		ctx.beginPath();
+		ctx.moveTo(ox, oy);
+		ctx.lineTo(x, y);
+		ctx.stroke();
+	}
+
 });

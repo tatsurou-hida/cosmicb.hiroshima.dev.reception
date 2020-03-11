@@ -2,77 +2,101 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-<link rel="stylesheet" media="all"
-	th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
-<title>訪問者受付画面</title>
+<link rel="stylesheet" media="all" th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
+<link rel="stylesheet" media="all" th:href="@{/css/handwriting.css}" />
+<title>訪問者受付画面 - 広島開発センター 入退室管理</title>
 </head>
 <body>
-	<div class="container">
-		​
-		<div id="carousel-main"
-			class="carousel slide row vh-100 align-items-center"
-			data-ride="carousel" data-wrap="false" data-interval="false">
-			​
-			<div id="carousel-main" class="carousel-inner col"
-				style="min-height: 50%;">
-				<div class="carousel-item active">
-					<div class="d-block w-100">
-						<div class="p-3 text-center">
-							<img src="images/logo30s.jpg" class="img-fluid"
-								alt="Responsive image">
-						</div>
-						<div class="p-3 text-center">
-							<button id="btn-init-accept" class="btn btn-lg btn-primary">受付する</button>
-						</div>
-					</div>
-				</div>
-				​
-				<div class="carousel-item">
-					<div class="d-block w-100 p-3">
-						​
-						<form action="result" id="receform" method="post">
-							<div class="form-group row">
-								<label for="inputName" class="col-sm-2 col-form-label">お名前
-									：</label>
-								<div class="col-sm-6">
-									<input type="text" id="inputName" name="inputName" class="form-control" />
-								</div>
-							</div>
-							<div class="form-group row">
-								<label for="inputCompany" class="col-sm-2 col-form-label">所属／会社：</label>
-								<div class="col-sm-6">
-									<input type="text" name="inputCompany" class="form-control" />
-								</div>
-							</div>
-							<div class="form-group row">
-								<label for="inputNum" class="col-sm-2 col-form-label">人数
-									：</label>
-								<div class="col-sm-6">
-									<input type="number" name="inputNum" max="10" min="1" value="1"
-										class="form-control" />
-								</div>
-							</div>
-							​ <input type="button" id="btn-submit"
-								class="btn btn-lg btn-primary" value="受付する"/>
-						</form>
-					</div>
-				</div>
-				<div class="carousel-item" id="announce">
-					<div class="d-block w-100 text-center text-secondary">
-						<p>担当者がまいります。少々お待ちください。</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	​
-	<script type="text/javascript"
-		th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<script type="text/javascript"
-		th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
-	<script type="text/javascript"
-		src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.6/holder.min.js">
-	</script>
-	<script type="text/javascript" th:src="@{/script/reception.js}"></script>
+    <div class="container">
+        ​
+        <div id="carousel-main" class="carousel slide row align-items-center mt-5" data-ride="carousel" data-wrap="false" data-interval="false">
+            ​
+            <div id="carousel-main" class="carousel-inner col" style="min-height: 50%;">
+                <div class="carousel-item active">
+                    <div class="d-block w-100">
+                        <div class="p-3 text-center">
+                            <img src="images/logo.jpg" class="img-fluid m-5" alt="Responsive image">
+                        </div>
+                        <div class="p-3 text-center">
+                            <button id="btn-init-accept" class="btn btn-lg btn-primary">受付する</button>
+                        </div>
+                    </div>
+                </div>
+                ​
+                <div class="carousel-item">
+                    <div class="d-block w-100 p-3">
+                        ​
+                        <form action="result" id="receform" method="post">
+                            <div class="form-group row">
+                                <label for="inputName" class="col-6 col-sm-4 col-form-label">お名前 ：</label>
+                                <div class="col">
+                                    <img class="thumbnail" src="" />
+                                    <button id="inputNameButton" type="button" class="btn btn-info btn-secondary" data-toggle="modal" data-target="#inputModal">入力する</button>
+                                    <input type="hidden" id="inputName" name="inputName" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputCompany" class="col-6 col-sm-4 col-form-label">所属／会社：</label>
+                                <div class="col">
+                                    <img class="thumbnail" src="" />
+                                    <button id="inputCompanyButton" type="button" class="btn btn-info btn-secondary" data-toggle="modal" data-target="#inputModal">入力する</button>
+                                    <input type="hidden" id="inputCompany" name="inputCompany" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputNum" class="col-6 col-sm-4 col-form-label">人数 ：</label>
+                                <div class="col">
+                                    <select name="inputNum" class="form-control">
+                                        <option selected value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="hidden" class="handwriting-dataurl" /> ​ <input type="button" id="btn-submit" class="btn btn-lg btn-primary" value="受付する" />
+                        </form>
+                    </div>
+                </div>
+                <div class="carousel-item" id="announce">
+                    <div class="d-block w-100 text-center text-secondary">
+                        <p>担当者がまいります。少々お待ちください。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="inputModal" tabindex="-1" role="dialog" aria-labelledby="inputModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inputModalLabel">title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="canvas-wrapper">
+                        <canvas class="handwriting" width="500" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary handwriting-reset">リセット</button>
+                    <button type="button" id="modalOK" class="btn btn-primary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    ​
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/script/reception.js}"></script>
 </body>
 </html>

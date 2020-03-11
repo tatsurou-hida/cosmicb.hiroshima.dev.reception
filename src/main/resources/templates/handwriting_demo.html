@@ -2,55 +2,52 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" media="all"
-	th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
+<meta name="viewport" content="width=device-width,init-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1">
+<link rel="stylesheet" media="all" th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
 <link rel="stylesheet" media="all" th:href="@{/css/handwriting.css}" />
-<title>handwriting_demo</title>
+<title>手書き入力 OCR デモ - 広島開発センター 入退室管理</title>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col">
-				<div class="canvas-wrapper">
-					<canvas class="handwriting"></canvas>
-				</div>
-			</div>
-		</div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="canvas-wrapper">
+                    <canvas class="handwriting" width="800" height="500"></canvas>
+                </div>
+            </div>
+        </div>
 
-		<div class="row">
-			<div class="col">
-				<form th:action="@{/handwriting_demo}" method="post"
-					th:object="${form}">
-					<p>
-						<button type="button" class="btn btn-danger handwriting-reset">リセット</button>
-						<input type="hidden" class="handwriting-dataurl"
-							th:field="*{canvasDataURL}" />
-						<button id="doOCR" class="btn btn-primary" type="submit">OCR実行</button>
-					</p>
-				</form>
-			</div>
-		</div>
+        <div class="row">
+            <div class="col">
+                <form th:action="@{/handwriting_demo}" method="post" th:object="${form}">
+                    <p>
+                        <button type="button" class="btn btn-danger handwriting-reset">リセット</button>
+                        <input type="hidden" class="handwriting-dataurl" th:field="*{canvasDataURL}" />
+                        <button id="doOCR" class="btn btn-primary" type="submit">OCR実行</button>
+                    </p>
+                </form>
+            </div>
+        </div>
 
-		<div class="row">
-			<div class="col">
-				<fieldset>
-					<legend>OCR 結果</legend>
-					<div class="alert alert-info" role="alert">
-						<span th:text="${form.ocrResult}">OCR Result here</span>
-					</div>
-				</fieldset>
-			</div>
-			<div class="col">
-				<img th:src="${form.canvasDataURL}" class="img-thumbnail toggle-modal" />
-			</div>
-		</div>
+        <div class="row">
+            <div class="col">
+                <fieldset>
+                    <legend>OCR 結果</legend>
+                    <div class="alert alert-info" role="alert">
+                        <span th:text="${form.ocrResult}">OCR Result here</span>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col">
+                <img th:src="${form.canvasDataURL}" class="img-thumbnail toggle-modal" />
+            </div>
+        </div>
 
-	</div>
-	<div id="modal-display"></div>
-	<script type="text/javascript"
-		th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<script type="text/javascript"
-		th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
-	<script type="text/javascript" th:src="@{/script/handwriting.js}"></script>
+    </div>
+    <div id="modal-display"></div>
+
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/script/handwriting.js}"></script>
 </body>
 </html>
