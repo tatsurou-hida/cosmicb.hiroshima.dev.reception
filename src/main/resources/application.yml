@@ -33,7 +33,7 @@ spring:
 # Tesseract OCR
 tesseract:
   traineddata:
-    path: src/main/resources/static/traineddata/tessdata
+    path: C:\\Tess4J\\traineddata\\tessdata
     lang: jpn
 
 retention:
