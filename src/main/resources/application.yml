@@ -15,9 +15,9 @@ spring:
 # MONGODB (MongoProperties)
   data:
     mongodb:
-      host: cluster0-cf1b0.gcp.mongodb.net
+      host: <hostname>
       port: 27017
-      uri: mongodb+srv://app:kAz54fgSlnACwxIi@cluster0-cf1b0.gcp.mongodb.net/test?retryWrites=true&w=majority
+      uri: mongodb+srv://<username>:<password>@<hostname>/test?retryWrites=true&w=majority
       database: database
 #      authentication-database: mongovwdb
 #      grid-fs-database:
