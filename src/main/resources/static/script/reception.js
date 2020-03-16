@@ -19,8 +19,10 @@ $(function() {
 
 	$('#btn-submit').on('click', function() {
 
+		postToSlack();
+
 		// 制御をconrollerへ（データ登録）
-		window.setTimeout(function(){
+		window.setTimeout(function() {
 			$('#receform').submit();
 		}, 3000);
 
@@ -40,6 +42,101 @@ $(function() {
 		$(e.target).addClass('active');
 		$('#inputNum').val($(e.target).data('value'));
 	});
+
+	function postToSlack() {
+		var uniteTwoImages = function(img1, img2, img1height) {
+			var context = document.createElement('canvas').getContext('2d');
+			context.drawImage(img1, 0, 0);
+			context.drawImage(img2, 0, img1height);
+			return context.canvas.toDataURL();
+		}
+
+		var createImage = function(base64) {
+			var image = new Image;
+			image.src = base64;
+			return image;
+		}
+
+		var toBlob = function(base64) {
+			var bin = atob(base64.replace(/^.*,/, ''));
+			var buffer = new Uint8Array(bin.length);
+			for (var i = 0; i < bin.length; i++) {
+				buffer[i] = bin.charCodeAt(i);
+			}
+
+			try {
+				var blob = new Blob([ buffer.buffer ], {
+					type : 'image/png'
+				});
+			} catch (e) {
+				return false;
+			}
+			return blob;
+		}
+
+		var postAjax = function(formData) {
+			$.ajax({
+				type : "POST",
+				url : document.forms["slack"].elements["url"].value,
+				data : formData,
+				enctype : 'multipart/form-data',
+				processData : false,
+				contentType : false,
+				error : function(response) {
+					console.error("failed to post a message to Slack");
+					console.error(response);
+				}
+			});
+		}
+
+		var dateFormat = {
+				  _fmt : {
+				    "yyyy": function(date) { return date.getFullYear() + ''; },
+				    "MM": function(date) { return ('0' + (date.getMonth() + 1)).slice(-2); },
+				    "dd": function(date) { return ('0' + date.getDate()).slice(-2); },
+				    "hh": function(date) { return ('0' + date.getHours()).slice(-2); },
+				    "mm": function(date) { return ('0' + date.getMinutes()).slice(-2); },
+				    "ss": function(date) { return ('0' + date.getSeconds()).slice(-2); }
+				  },
+				  _priority : ["yyyy", "MM", "dd", "hh", "mm", "ss"],
+				  format: function(date, format){
+				    return this._priority.reduce((res, fmt) => res.replace(fmt, this._fmt[fmt](date)), format)
+				  }
+				};
+
+		let suffix = "png";
+
+		var getImageFileName = function() {
+			return dateFormat.format(new Date, "yyyyMMddhhmmss") + "." + suffix;
+		}
+
+		const SLACK_TOKEN = document.forms["slack"].elements["token"].value;
+		const SLACK_CHANNEL_ID = document.forms["slack"].elements["channel"].value;
+
+		var base64Company = $("#inputCompany").val();
+		var base64Name = $("#inputName").val();
+
+		var formData = new FormData();
+		formData.append("token", SLACK_TOKEN);
+		formData.append("channels", SLACK_CHANNEL_ID);
+		formData.append("file", toBlob(base64Company));
+		formData.append("filename", "com_" + getImageFileName());
+		formData.append("filetype", suffix);
+		formData.append("title", "所属／会社");
+		formData.append("initial_comment", "受付しました: " + $("#inputNum").val() + "名様");
+
+		postAjax(formData);
+
+		formData = new FormData();
+		formData.append("token", SLACK_TOKEN);
+		formData.append("channels", SLACK_CHANNEL_ID);
+		formData.append("file", toBlob(base64Name));
+		formData.append("filename", "name_" + getImageFileName());
+		formData.append("filetype", suffix);
+		formData.append("title", "お名前");
+
+		postAjax(formData);
+	}
 });
 
 $(function() {

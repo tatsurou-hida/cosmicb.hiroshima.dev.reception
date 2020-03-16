@@ -12,6 +12,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.co.cosmicb.reception.config.SlackConfig;
 import jp.co.cosmicb.reception.config.TesseractConfig;
 import jp.co.cosmicb.reception.entity.OfficeVisit;
 import jp.co.cosmicb.reception.repository.ReceptionRepository;
@@ -27,6 +28,9 @@ public class ReceptionService {
 
 	@Autowired
 	TesseractConfig tessConfig;
+
+	@Autowired
+	SlackConfig slackConfig;
 
 	public void insertVisitor(String org, String name, Integer number) {
 
@@ -122,6 +126,13 @@ public class ReceptionService {
 
 		return image;
 
+	}
+
+	/**
+	 * @return
+	 */
+	public SlackConfig getSlackConfig() {
+		return slackConfig;
 	}
 
 }

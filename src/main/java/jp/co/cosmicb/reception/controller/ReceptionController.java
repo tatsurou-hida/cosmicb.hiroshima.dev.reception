@@ -3,10 +3,10 @@ package jp.co.cosmicb.reception.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 import jp.co.cosmicb.reception.service.ReceptionService;
 
@@ -18,8 +18,9 @@ public class ReceptionController {
 	private ReceptionService service;
 
 	@RequestMapping(value = "/reception", method = RequestMethod.GET)
-	public String index(ModelAndView mv) {
+	public String index(Model m) {
 
+		m.addAttribute("slack", service.getSlackConfig());
 		return "reception";
 	}
 
@@ -29,7 +30,7 @@ public class ReceptionController {
 			@RequestParam("inputName") String inputName,
 			@RequestParam("inputCompany") String inputCompany,
 			@RequestParam("inputNum") Integer inputNum,
-			ModelAndView mv) {
+			Model m) {
 
 		service.insertVisitor(inputCompany, inputName, inputNum);
 

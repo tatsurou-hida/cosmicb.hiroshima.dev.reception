@@ -8,5 +8,10 @@
     "name": "retention",
     "type": "com.example.demo.config.RetentionConfig",
     "description": "Configuration of data retention"
+  },
+  {
+    "name": "slack",
+    "type": "com.example.demo.config.SlackConfig",
+    "description": "Configuration to post slack API"
   }
 ]}
