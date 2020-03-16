@@ -18,25 +18,21 @@ public class ReceptionController {
 	private ReceptionService service;
 
 	@RequestMapping(value = "/reception", method = RequestMethod.GET)
-	public ModelAndView index(ModelAndView mv) {
+	public String index(ModelAndView mv) {
 
-		mv.setViewName("reception");
-
-		return mv;
+		return "reception";
 	}
 
 	//
 	@RequestMapping(value = "/result", method = RequestMethod.POST)
-	public ModelAndView result(
+	public String result(
 			@RequestParam("inputName") String inputName,
 			@RequestParam("inputCompany") String inputCompany,
 			@RequestParam("inputNum") Integer inputNum,
-					ModelAndView mv) {
+			ModelAndView mv) {
 
-		service.insertVisitor(inputCompany,inputName,inputNum);
+		service.insertVisitor(inputCompany, inputName, inputNum);
 
-		mv.setViewName("reception");	// HTML
-
-		return mv;
+		return "redirect:/reception";
 	}
 }

@@ -20,7 +20,9 @@ $(function() {
 	$('#btn-submit').on('click', function() {
 
 		// 制御をconrollerへ（データ登録）
-		$('#receform').submit();
+		window.setTimeout(function(){
+			$('#receform').submit();
+		}, 3000);
 
 		// ３枚目画面へ遷移
 		$('#carousel-main').carousel('next');
