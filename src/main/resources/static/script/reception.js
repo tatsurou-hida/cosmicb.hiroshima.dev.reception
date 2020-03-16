@@ -1,17 +1,22 @@
 $(function() {
 
+	$('.justify-height').each(function(index, elem) {
+		$(elem).css('height', ($(window).height() - 300) + 'px');
+	});
+
+	// events
+
 	$('.carousel-next').on('click', function(e) {
 		var convertToUrlTarget = $(e.target).data('convert-to-url');
 		if (convertToUrlTarget) {
-				var canvasSelector = $(e.target).data('canvas');
-				var dataUrl = $(canvasSelector)[0].toDataURL();
-				$(convertToUrlTarget).val(dataUrl);
+			var canvasSelector = $(e.target).data('canvas');
+			var dataUrl = $(canvasSelector)[0].toDataURL();
+			$(convertToUrlTarget).val(dataUrl);
 		}
 
 		$('#carousel-main').carousel('next');
 	});
 
-	// 受付画面の名前入力チェック
 	$('#btn-submit').on('click', function() {
 
 		// 制御をconrollerへ（データ登録）
@@ -27,6 +32,12 @@ $(function() {
 			$('#introduction').modal('show');
 		}
 	});
+
+	$('.btn-input-number').on('focus', function(e) {
+		$('.btn-input-number').removeClass('active');
+		$(e.target).addClass('active');
+		$('#inputNum').val($(e.target).data('value'));
+	});
 });
 
 $(function() {
@@ -36,8 +47,8 @@ $(function() {
 	$('canvas.handwriting').each(
 			function(index, elem) {
 				var canvas = elem;
-				$(canvas).attr('width', ($(window).width() - 300) + 'px');
-				$(canvas).attr('height', ($(window).height() - 300) + 'px');
+				$(canvas).attr('width', ($(window).width() - 300));
+				$(canvas).attr('height', ($(window).height() - 300));
 
 				var ctx = canvas.getContext('2d');
 				var moveflg = 0;

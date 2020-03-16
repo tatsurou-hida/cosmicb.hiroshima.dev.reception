@@ -4,13 +4,14 @@
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 <link rel="stylesheet" media="all" th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
 <link rel="stylesheet" media="all" th:href="@{/css/handwriting.css}" />
+<link rel="stylesheet" media="all" th:href="@{/css/reception.css}" />
 <title>訪問者受付画面 - 広島開発センター 入退室管理</title>
 </head>
 <body>
     <div class="container">
         <form action="result" id="receform" method="post">
             ​
-            <div id="carousel-main" class="carousel slide row align-items-center mt-5" data-ride="carousel" data-wrap="false" data-interval="false">
+            <div id="carousel-main" class="carousel slide row align-items-center mt-5" data-ride="carousel" data-wrap="false" data-interval="false" data-touch="false">
                 ​
                 <div id="carousel-main" class="carousel-inner col" style="min-height: 50%;">
                     <div class="carousel-item active">
@@ -65,22 +66,64 @@
                     <div class="carousel-item">
                         <div class="d-block w-100 p-3">
                             <div class="card">
-                                <h5 class="card-header">人数を入力してください</h5>
+                                <h5 class="card-header">人数を選択してください</h5>
                                 <div class="card-body">
-                                    <label for="inputNum" class="col-6 col-sm-4 col-form-label">人数 ：</label>
-                                    <div class="col">
-                                        <select name="inputNum" class="form-control">
-                                            <option selected value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                            <option value="6">6</option>
-                                            <option value="7">7</option>
-                                            <option value="8">8</option>
-                                            <option value="9">9</option>
-                                            <option value="10">10</option>
-                                        </select>
+                                    <div class="btn-toolbar justify-height" role="toolbar">
+                                        <input type="hidden" id="inputNum" name="inputNum" value="1" />
+                                        <div class="row ">
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number active" data-value="1">
+                                                    <span class="display-4">1</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="2">
+                                                    <span class="display-4">2</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="3">
+                                                    <span class="display-4">3</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="4">
+                                                    <span class="display-4">4</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="5">
+                                                    <span class="display-4">5</span>人
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="6">
+                                                    <span class="display-4">6</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="7">
+                                                    <span class="display-4">7</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="8">
+                                                    <span class="display-4">8</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="9">
+                                                    <span class="display-4">9</span>人
+                                                </button>
+                                            </div>
+                                            <div class="btn-group m-1 col-2" role="group">
+                                                <button type="button" class="btn btn-outline-info btn-input-number" data-value="10">
+                                                    <span class="display-4">10</span>人
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-footer text-right">
@@ -110,10 +153,10 @@
                 </div>
                 <div class="modal-body text-center">
                     <p>ディスプレイ手前のキーパッド部分をタッチペンでなぞると記入できます</p>
-                    <img th:src="@{/images/YogaBook.png}" width="300"/>
+                    <img th:src="@{/images/YogaBook.png}" width="300" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                    <button type="button" class="btn btn-lg btn-primary px-5" data-dismiss="modal">OK</button>
                 </div>
             </div>
         </div>
