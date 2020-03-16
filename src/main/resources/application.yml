@@ -40,3 +40,8 @@ retention:
   persontovisit:
     period: 36
     logfilepath: log/persontovisit.log
+
+slack:
+  token: xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+  channel: Cxxxxxxxxxx
+  url: https://slack.com/api/files.upload
