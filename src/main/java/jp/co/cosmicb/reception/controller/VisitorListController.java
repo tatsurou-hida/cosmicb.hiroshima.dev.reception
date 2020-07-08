@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.terasoluna.gfw.common.message.ResultMessages;
@@ -121,6 +122,41 @@ public class VisitorListController {
 		return "VisitorList";
 
 	}
+
+
+	/** 追加行に入力された情報を登録して検索、表示する処理
+	 * @param visitorOrg 追加行に入力された会社名
+	 * @param visitorName 追加行に入力された名前
+	 * @param VisitorCount 追加行に選択された人数
+	 * @param s セッション中のSearchModel
+	 * @param model
+	 */
+	@RequestMapping(value = "/btnAdd", method = RequestMethod.POST)
+	public String btnAdd(
+			@RequestParam("hiddenVisitorOrg") String visitorOrg,//会社名
+			@RequestParam("hiddenVisitorName") String visitorName,//名前
+			@RequestParam("hiddenVisitorCount") Integer VisitorCount,//人数
+			@ModelAttribute("s") SearchModel s,
+			Model model) {
+
+		EraseModel eraseM = new EraseModel();
+		VisitorListExitSendModel sendM = new VisitorListExitSendModel();
+		ResultMessages messages = null;
+
+		//btnAddが呼ばれているかの確認
+		logger.info("★★★★★ btnAdd called.");
+
+		//追加行の会社名、名前、人数を登録
+		visitorListService.insertVisitorAdd(visitorOrg, visitorName, VisitorCount);
+
+		//検索・表示処理
+		displayWithSearch(s, model, eraseM, sendM, messages);
+
+		//Thymeleaf「VisitorList.html」を表示する;
+		return "VisitorList";
+
+	}
+
 
 	//FIX:_Idをhiddenができないためaction名をURLに付加して取得している
 	@RequestMapping(value = "/exit/{id}", method = RequestMethod.POST)

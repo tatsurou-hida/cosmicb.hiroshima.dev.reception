@@ -285,4 +285,28 @@ public class VisitorListService {
 		return Date.from(instant);
 	}
 
+
+	/**	追加行を登録する処理
+	 * @param org 会社名
+	 * @param name 名前
+	 * @param number 人数
+	 */
+	public void insertVisitorAdd(String org, String name, Integer number) {
+
+		LocalDateTime date = LocalDateTime.now();
+		LocalDateTime epoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+
+		OfficeVisit officeVisit = new OfficeVisit();
+
+		officeVisit.setVisitorOrg(org);
+		officeVisit.setVisitorName(name);
+		officeVisit.setVisitorCount(number);
+		officeVisit.setVisitedAt(date);
+		officeVisit.setPersonToVisit("");
+		officeVisit.setLeftAt(epoch);
+
+		visitorListRepository.save(officeVisit);
+
+	}
+
 }

@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <!-- BootstrapのCSS読み込み -->
-<link rel="stylesheet" media="all" th:href="@{/webjars/bootstrap/4.4.1/css/bootstrap.min.css}" />
+<!-- bootstrapのバージョンを4.4.1から4.5.0に変更 -->
+<!-- ボタンが使用不可状態ではボタンにカーソルがあたったときに、矢印のままにしたかったので。 -->
+<!-- 4.4.1だとボタンにカーソルがあたると指マークになっていた -->
+<link rel="stylesheet" media="all" th:href="@{/webjars/bootstrap/4.5.0/css/bootstrap.min.css}" />
 <link rel="stylesheet" media="all" th:href="@{/css/handwriting.css}" />
+<link rel="stylesheet" media="all" th:href="@{/css/visitorlist.css}" />
 
 <title>管理画面 - 広島開発センター 入退室管理</title>
 
@@ -47,16 +51,16 @@
             </div>
         </div>
 
-        <div style="height: 390px; overflow-y: scroll;">
-            <table id="visitorlist" class="table table-striped table-bordered table-sm">
-                <thead class="thead-dark">
-                    <tr>
+        <div class="dropdown" style="height: 390px; overflow-y: scroll; margin-top:25px; margin-bottom:100px;">
+            <table id="visitorlist" class="table table-bordered table-sm">
+                <thead class="thead-light">
+                    <tr align="center">
                         <th>入室日時</th>
                         <th colspan="2">所属／会社名</th>
                         <th colspan="2">訪問者名</th>
-                        <th>人数</th>
-                        <th>経過時間</th>
-                        <th>訪問先</th>
+                        <th id="visitor_count">人数</th><!-- cssで個別に幅を設定 -->
+                        <th id="diffTime">経過時間</th><!-- cssで個別に幅を設定 -->
+                        <th id="person_to_visit">訪問先</th><!-- cssで個別に幅を設定 -->
                         <th>退室時間</th>
                     </tr>
                 </thead>
@@ -67,8 +71,8 @@
                         <td class="align-middle mx-auto"><img th:src="${row.visitor_org_data_url}" class="thumbnail toggle-modal" /></td>
                         <td class="align-middle" id="name" th:text="${row.visitor_name}" />
                         <td class="align-middle mx-auto"><img th:src="${row.visitor_name_data_url}" class="thumbnail toggle-modal" /></td>
-                        <td class="align-middle" th:text="${row.visitor_count}" />
-                        <td class="align-middle" id="diff" th:name="${row._id}" th:text="${row.diffTime}" th:classappend="${row.diffMinutes > 300} ? bg-danger :'' "></td>
+                        <td class="align-middle" th:text="${row.visitor_count}"  align="center"/>
+                        <td class="align-middle" id="diff" th:name="${row._id}" th:text="${row.diffTime}" th:classappend="${row.diffMinutes > 300} ? alert-warning :'' " align="center"></td>
                         <td class="align-middle">
                             <form action="#" th:action="@{/exit/{id}(id=${row._id})}" th:id="'form' + ${rowStat.index}" method="post" th:object="${sendM}">
                                 <div th:if="${row.person_to_visit ==''}">
@@ -77,7 +81,7 @@
                                             <input type="text" class="form-control" name="person_to_visit" value="" placeholder="訪問先を入力" required>
                                         </div>
                                         <div class="col-5">
-                                            <button type="submit" id="btnExit" class="btn btn-success">退室処理</button>
+                                            <button type="submit" class="btn btn-success">退室処理</button>
                                         </div>
                                     </div>
                                 </div>
@@ -98,10 +102,28 @@
     </div>
 
     <div class="fixed-bottom alert-secondary border pl-3">
-        <form action="#" th:action="@{/erase}" method="post">
-            <button type="submit" class="btn btn-danger">データ削除</button>
-            <span th:text="'　' + ${eraseM.period} + 'カ月以上経過した退室済みデータをデータベースから削除します'"></span>
-        </form>
+        <!-- BootStrapの折りたたみ機能を使う -->
+        <!-- data-toggle="collapse"で「折りたたまれた状態で表示する」を設定、
+		buttonによって開閉を切り替える。
+		data-targetはターゲット要素設定、aria-expandedは開閉状態、aria-controlsは対象を示す。 -->
+		<p>
+		  <button class="btn btn-link btn-block text-left"
+		  			type="button"
+		  			id="btnCollapse"
+		  			data-toggle="collapse"
+		  			data-target="#collapseExample"
+		  			aria-expanded="false"
+		  			aria-controls="collapseExample">データ削除を開く
+		  </button>
+		</p>
+		<div class="collapse" id="collapseExample">
+			<div class="card card-body">
+				<form action="#" th:action="@{/erase}" method="post">
+		            <button type="submit" class="btn btn-warning">データ削除</button>
+		            <span th:text="'　' + ${eraseM.period} + 'カ月以上経過した退室済みデータをデータベースから削除します'"></span>
+		        </form>
+			</div>
+		</div>
     </div>
 
     <div id="modal-display"></div>
@@ -109,8 +131,7 @@
     <!-- jQuery読み込み -->
     <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
     <!-- BootstrapのJS読み込み -->
-    <script th:src="@{/webjars/bootstrap/4.4.1/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
     <script th:src="@{/script/VisitorList.js}"></script>
-
 </body>
 </html>

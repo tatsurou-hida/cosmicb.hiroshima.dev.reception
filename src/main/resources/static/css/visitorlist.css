@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+/* テーブルの人数、経過時間、訪問先の幅を設定
+幅がある程度広くないと人数プルダウンの中身が表示できないため
+経過時間と訪問先もそれに合わせて設定
+htmlフォントサイズを基準（おそらく現行は1px？）として相対的なサイズを設定
+visitor_count	基準×4.2
+diffTime	基準×4.7
+person_to_visit	基準×17
+*/
+
+#visitor_count {
+    width: 4.2rem;
+}
+
+#diffTime {
+    width: 4.7rem;
+}
+
+#person_to_visit {
+    width: 17rem;
+}

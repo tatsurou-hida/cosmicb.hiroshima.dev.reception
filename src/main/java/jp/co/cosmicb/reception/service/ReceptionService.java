@@ -76,7 +76,7 @@ public class ReceptionService {
 		BufferedImage image = this.getBufferedImage(dataURL);
 
 		if (image == null) {
-			return "";
+			return "blank";
 		}
 
 		ITesseract tesseract = new Tesseract();
